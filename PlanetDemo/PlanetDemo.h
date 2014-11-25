@@ -15,10 +15,6 @@ subject to the following restrictions:
 #ifndef PLANET_DEMO_H
 #define PLANET_DEMO_H
 
-
-///DYNAMIC_CHARACTER_CONTROLLER is not fully implemented yet at the moment
-//#define DYNAMIC_CHARACTER_CONTROLLER 1
-
 #include "BulletCollision/CollisionShapes/btConvexHullShape.h"
 
 class btCharacterControllerInterface;
@@ -34,13 +30,6 @@ class btCollisionShape;
 class PlanetDemo : public GlutBtApplication
 {
 	public:
-
-#ifdef DYNAMIC_CHARACTER_CONTROLLER
-	btCharacterControllerInterface* m_character;
-#else
-	btKinematicCharacterController* m_character;
-	class	btPairCachingGhostObject* m_ghostObject;
-#endif
 
         btVector3 m_gravityCenter;
         btRigidBody *m_player;
@@ -59,8 +48,6 @@ class PlanetDemo : public GlutBtApplication
 
 	btVector3*	m_vertices;
 
-	void	debugDrawContacts();
-	
 	float		m_cameraHeight;
 
 	float	m_minCameraDistance;

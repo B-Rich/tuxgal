@@ -51,7 +51,6 @@ m_cameraHeight(4.f),
 m_minCameraDistance(3.f),
 m_maxCameraDistance(10.f)
 {
-	m_character = 0;
 	m_cameraPosition = btVector3(30,30,30);
 }
 
@@ -140,29 +139,6 @@ void PlanetDemo::initPhysics()
 	m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher,m_overlappingPairCache,m_constraintSolver,m_collisionConfiguration);
 	m_dynamicsWorld->getDispatchInfo().m_allowedCcdPenetration=0.0001f;
 	
-#ifdef DYNAMIC_CHARACTER_CONTROLLER
-	m_character = new DynamicCharacterController ();
-#else
-	
-	btTransform startTransform;
-	startTransform.setIdentity ();
-	//startTransform.setOrigin (btVector3(0.0, 4.0, 0.0));
-	startTransform.setOrigin (btVector3(10.210098,-1.6433364,16.453260));
-
-
-	m_ghostObject = new btPairCachingGhostObject();
-	m_ghostObject->setWorldTransform(startTransform);
-	sweepBP->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
-	btScalar characterHeight=1.75;
-	btScalar characterWidth =1.75;
-	btConvexShape* capsule = new btCapsuleShape(characterWidth,characterHeight);
-	m_ghostObject->setCollisionShape (capsule);
-	m_ghostObject->setCollisionFlags (btCollisionObject::CF_CHARACTER_OBJECT);
-
-	btScalar stepHeight = btScalar(0.35);
-	m_character = new btKinematicCharacterController (m_ghostObject,capsule,stepHeight);
-#endif
-
 	////////////////
 
 	/// Create some basic environment
@@ -172,12 +148,6 @@ void PlanetDemo::initPhysics()
         m_gravityCenter = center;
         initPlanet(center, 30);
         initPlayer(btVector3(0, 10, 0));
-        m_player->setLinearVelocity(btVector3(3, 3, 3));
-
-	///only collide with static for now (no interaction with dynamic objects)
-	m_dynamicsWorld->addCollisionObject(m_ghostObject,btBroadphaseProxy::CharacterFilter, btBroadphaseProxy::StaticFilter|btBroadphaseProxy::DefaultFilter);
-
-	m_dynamicsWorld->addAction(m_character);
 
 
 	///////////////
@@ -217,43 +187,6 @@ void PlanetDemo::renderme()
 
 
 
-void	PlanetDemo::debugDrawContacts()
-{
-//	printf("numPairs = %d\n",m_customPairCallback->getOverlappingPairArray().size());
-	{
-		btManifoldArray	manifoldArray;
-		btBroadphasePairArray& pairArray = m_ghostObject->getOverlappingPairCache()->getOverlappingPairArray();
-		int numPairs = pairArray.size();
-
-		for (int i=0;i<numPairs;i++)
-		{
-			manifoldArray.clear();
-
-			const btBroadphasePair& pair = pairArray[i];
-			
-			btBroadphasePair* collisionPair = m_overlappingPairCache->getOverlappingPairCache()->findPair(pair.m_pProxy0,pair.m_pProxy1);
-			if (!collisionPair)
-				continue;
-
-			if (collisionPair->m_algorithm)
-				collisionPair->m_algorithm->getAllContactManifolds(manifoldArray);
-
-			for (int j=0;j<manifoldArray.size();j++)
-			{
-				btPersistentManifold* manifold = manifoldArray[j];
-				for (int p=0;p<manifold->getNumContacts();p++)
-				{
-					const btManifoldPoint&pt = manifold->getContactPoint(p);
-
-					btVector3 color(255,255,255);
-					m_dynamicsWorld->getDebugDrawer()->drawContactPoint(pt.getPositionWorldOnB(),pt.m_normalWorldOnB,pt.getDistance(),pt.getLifeTime(),color);
-				}
-			}
-		}
-	}
-
-}
-
 void PlanetDemo::clientMoveAndDisplay()
 {
 
@@ -261,13 +194,7 @@ void PlanetDemo::clientMoveAndDisplay()
 
 	float dt = getDeltaTimeMicroseconds() * 0.000001f;
 
-	/* Character stuff &*/
-	if (m_character)
-	{
-		
-	}
-
-	debugDrawContacts();
+	/* Character stuff */
 
 
 	if (m_dynamicsWorld)
@@ -281,7 +208,8 @@ void PlanetDemo::clientMoveAndDisplay()
 
 		///set walkDirection for our character
 		btTransform xform;
-		xform = m_ghostObject->getWorldTransform ();
+                btCollisionObject *player = (btCollisionObject *) m_player;
+		xform = player->getWorldTransform ();
 
 		btVector3 forwardDir = xform.getBasis()[2];
 	//	printf("forwardDir=%f,%f,%f\n",forwardDir[0],forwardDir[1],forwardDir[2]);
@@ -298,26 +226,30 @@ void PlanetDemo::clientMoveAndDisplay()
 		//rotate view
 		if (gLeft)
 		{
-			btMatrix3x3 orn = m_ghostObject->getWorldTransform().getBasis();
+			btMatrix3x3 orn = player->getWorldTransform().getBasis();
 			orn *= btMatrix3x3(btQuaternion(btVector3(0,1,0),0.01));
-			m_ghostObject->getWorldTransform ().setBasis(orn);
+			player->getWorldTransform ().setBasis(orn);
 		}
 
 		if (gRight)
 		{
-			btMatrix3x3 orn = m_ghostObject->getWorldTransform().getBasis();
+			btMatrix3x3 orn = player->getWorldTransform().getBasis();
 			orn *= btMatrix3x3(btQuaternion(btVector3(0,1,0),-0.01));
-			m_ghostObject->getWorldTransform ().setBasis(orn);
+			player->getWorldTransform ().setBasis(orn);
 		}
 
-		if (gForward)
+		if (gForward) {
 			walkDirection += forwardDir;
+			//TODO: walkDirection * walkSpeed
+			m_player->setLinearVelocity(3 * walkDirection);
+		}
 
-		if (gBackward)
+		if (gBackward) {
 			walkDirection -= forwardDir;	
+			//TODO: walkDirection * walkSpeed
+			m_player->setLinearVelocity(-3 * walkDirection);
+		}
 
-
-		m_character->setWalkDirection(walkDirection*walkSpeed);
 
 
 		int numSimSteps = m_dynamicsWorld->stepSimulation(dt,maxSimSubSteps);
@@ -380,21 +312,13 @@ void PlanetDemo::displayCallback(void)
 	if (m_dynamicsWorld)
 		m_dynamicsWorld->debugDrawWorld();
 
-	debugDrawContacts();
-
 	glFlush();
 	glutSwapBuffers();
 }
 
 void PlanetDemo::clientResetScene()
 {
-	m_dynamicsWorld->getBroadphase()->getOverlappingPairCache()->cleanProxyFromPairs(m_ghostObject->getBroadphaseHandle(),getDynamicsWorld()->getDispatcher());
-
-	//TODO: m_character->reset (m_dynamicsWorld);
-	m_character->reset ();
-	///WTF
-	m_character->warp (btVector3(10.210001,-2.0306311,16.576973));
-	
+	//TODO: m_player->reset (m_dynamicsWorld);
 }
 
 void PlanetDemo::specialKeyboardUp(int key, int x, int y)
@@ -457,8 +381,7 @@ void PlanetDemo::specialKeyboard(int key, int x, int y)
 	break;
 	case GLUT_KEY_F1:
 	{
-		if (m_character && m_character->canJump())
-			gJump = 1;
+		gJump = 1;
 	}
 	break;
 	default:
@@ -535,11 +458,6 @@ void	PlanetDemo::updateCamera()
 
 PlanetDemo::~PlanetDemo()
 {
-	//cleanup in the reverse order of creation/initialization
-	if (m_character)
-	{
-		m_dynamicsWorld->removeCollisionObject(m_ghostObject);
-	}
 	//remove the rigidbodies from the dynamics world and delete them
 	int i;
 	for (i=m_dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
