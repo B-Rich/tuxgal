@@ -14,8 +14,6 @@ subject to the following restrictions:
 */
 
 #include "btBulletDynamicsCommon.h"
-#include "BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
-#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
 #include "GLDebugDrawer.h"
 #include <stdio.h> //printf debugging
@@ -24,11 +22,6 @@ subject to the following restrictions:
 
 #include "GlutStuff.h"
 #include "PlanetDemo.h"
-#ifdef DYNAMIC_CHARACTER_CONTROLLER
-#include "DynamicCharacterController.h"
-#else
-#include "BulletDynamics/Character/btKinematicCharacterController.h"
-#endif
 
 const int maxProxies = 32766;
 const int maxOverlap = 65535;
