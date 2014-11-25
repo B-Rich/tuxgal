@@ -486,7 +486,8 @@ void	PlanetDemo::updateCamera()
 	btTransform characterWorldTrans;
 
 	//look at the vehicle
-	characterWorldTrans = m_ghostObject->getWorldTransform();
+        btCollisionObject *player = (btCollisionObject *) m_player;
+	characterWorldTrans = player->getWorldTransform();
 	btVector3 up = characterWorldTrans.getBasis()[1];
 	btVector3 backward = -characterWorldTrans.getBasis()[2];
 	up.normalize ();
