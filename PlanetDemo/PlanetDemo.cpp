@@ -31,7 +31,6 @@ static int gBackward = 0;
 static int gLeft = 0;
 static int gRight = 0;
 static int gJump = 0;
-static float c_friction = 0.01;
 
 
 
@@ -48,41 +47,39 @@ m_maxCameraDistance(10.f)
 }
 
 
-void PlanetDemo::initPlanet(btVector3 initialPosition, btScalar radius)
+void PlanetDemo::addPlanet(btVector3 initialPosition, btScalar radius)
 {
-    btTransform groundTransform;
-    groundTransform.setIdentity();
-    groundTransform.setOrigin(btVector3(
+    btTransform planetTransform;
+    planetTransform.setIdentity();
+    planetTransform.setOrigin(btVector3(
         initialPosition.getX(),
         initialPosition.getY(),
         initialPosition.getX()
         ));
 
-    btScalar groundMass(0.); //the mass is 0, because the ground is immovable
-    btVector3 localGroundInertia(0, 0, 0);
+    btScalar planetMass(0.); //the mass is 0, because the planet is immovable
+    btVector3 localGroundInertia(0., 0., 0.);
 
-    btCollisionShape *groundShape = new btSphereShape(radius);
-    m_collisionShapes.push_back(groundShape);
-    btDefaultMotionState *groundMotionState =
-        new btDefaultMotionState(groundTransform);
+    btCollisionShape *planetShape = new btSphereShape(radius);
+    m_collisionShapes.push_back(planetShape);
+    btDefaultMotionState *planetMotionState =
+        new btDefaultMotionState(planetTransform);
 
-    groundShape->calculateLocalInertia(groundMass, localGroundInertia);
+    planetShape->calculateLocalInertia(planetMass, localGroundInertia);
 
-    btRigidBody::btRigidBodyConstructionInfo groundRBInfo(
-        groundMass,
-        groundMotionState,
-        groundShape,
+    btRigidBody::btRigidBodyConstructionInfo planetRBInfo(
+        planetMass,
+        planetMotionState,
+        planetShape,
         localGroundInertia
         );
-    groundRBInfo.m_friction = c_friction;
-    btRigidBody *groundBody = new btRigidBody(groundRBInfo);
+    btRigidBody *planetBody = new btRigidBody(planetRBInfo);
 
     //add the body to the dynamics world
-    m_dynamicsWorld->addRigidBody(groundBody);
-    //m_dynamicsWorld->addCollisionObject(groundBody);
+    m_dynamicsWorld->addRigidBody(planetBody);
 }
 
-void PlanetDemo::initPlayer(btVector3 initialPosition)
+btRigidBody* PlanetDemo::addDynamicObject(btVector3 initialPosition, btScalar friction)
 {
     btCollisionShape* newRigidShape = new btCapsuleShape(1.75, 1.75);
     m_collisionShapes.push_back(newRigidShape);
@@ -108,19 +105,18 @@ void PlanetDemo::initPlayer(btVector3 initialPosition)
         newRigidShape,
         localInertia
         );
-    rbInfo.m_friction = c_friction;
-    m_player = new btRigidBody(rbInfo);
-    m_player->setAngularFactor(0);
-    m_player->setRestitution(1);
+    rbInfo.m_friction = friction;
+    btRigidBody *character = new btRigidBody(rbInfo);
+    character->setAngularFactor(0);
+    character->setRestitution(1);
 
-    m_dynamicsWorld->addRigidBody(m_player);
-    //m_dynamicsWorld->addCollisionObject(m_player);
+    m_dynamicsWorld->addRigidBody(character);
+
+    return character;
 }
 
 void PlanetDemo::initPhysics()
 {
-	//btCollisionShape* groundShape = new btBoxShape(btVector3(50,3,50));
-	//m_collisionShapes.push_back(groundShape);
 	m_collisionConfiguration = new btDefaultCollisionConfiguration();
 	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
 	btVector3 worldMin(-1000,-1000,-1000);
@@ -137,10 +133,14 @@ void PlanetDemo::initPhysics()
 	/// Create some basic environment
 
 	m_dynamicsWorld->setGravity(btVector3(0,0,0));
-        btVector3 center(0, -30, 0);
+        btVector3 center(0, -20, 0);
         m_gravityCenter = center;
-        initPlanet(center, 30);
-        initPlayer(btVector3(0, 10, 0));
+        addPlanet(center, 40);
+        m_player = addDynamicObject(btVector3(0, 0, 0));
+        addDynamicObject(btVector3(10, 0, 0), 0.5);
+        addDynamicObject(btVector3(-10, 0, 0), 0.5);
+        addDynamicObject(btVector3(0, 0, 10), 0.5);
+        addDynamicObject(btVector3(0, 0, -10), 0.5);
 
 
 	///////////////
@@ -159,13 +159,33 @@ void PlanetDemo::processPhysics()
 
         btCollisionObject *obj = objects[i];
         btRigidBody *body = btRigidBody::upcast(obj);
-        if (body && body->getMotionState()) {
+        if (body && body->getInvMass() > 0.0 && body->getMotionState()) {
 
+            // Get transformation
             btTransform trans;
             body->getMotionState()->getWorldTransform(trans);
-            btVector3 direction = m_gravityCenter - trans.getOrigin();
-            direction.normalize();
-            body->setGravity(9.8 * direction);
+
+            // Calculate and set gravity vector
+            btVector3 n = trans.getOrigin() - m_gravityCenter;
+            n.normalize();
+            body->setGravity(-9.8 * n);
+
+            // Get body up vector
+            const btVector3 yAxis(0.0, 1.0, 0.0);
+            btQuaternion q = trans.getRotation();
+            btVector3 bodyAxis = btMatrix3x3(q) * yAxis;
+
+            // Align body up vector along gravity vector
+            const btScalar epsilon = 1.0e-5;
+            btVector3 rotationAxis = bodyAxis.cross(n);
+            btScalar crossLength = rotationAxis.length();
+            if (crossLength > epsilon) {
+                btScalar angle = btAsin(crossLength);
+                rotationAxis /= crossLength;
+                btQuaternion dq(rotationAxis, angle);
+                trans.setRotation(dq * q);
+                body->setWorldTransform(trans);
+            }
         }
     }
 }

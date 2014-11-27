@@ -73,8 +73,8 @@ class PlanetDemo : public GlutBtApplication
 
 	void renderme();
 
-        void initPlanet(btVector3 initialPosition, btScalar radius);
-        void initPlayer(btVector3 initialPosition);
+        void addPlanet(btVector3 initialPosition, btScalar radius);
+        btRigidBody* addDynamicObject(btVector3 initialPosition, btScalar friction = 0.1);
 
 	void initPhysics();
 
