@@ -13,7 +13,12 @@ public:
         btScalar friction = 0.1
         );
 
+    btVector3 getUpDir() const { return m_upDir; }
+
     virtual void applyGravity(tuxWorld *world);
+
+private:
+    btVector3 m_upDir;
 };
 
 #endif //TUX_CHARACTER_OBJECT_H

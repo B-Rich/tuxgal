@@ -36,6 +36,7 @@ tuxCharacterObject::tuxCharacterObject(
         body->setAngularFactor(0.0);
         body->setRestitution(1.0);
         body->setUserPointer(this);
+        m_upDir = btVector3(0.0, 1.0, 0.0);
         setBody(body);
     }
 }
@@ -72,6 +73,9 @@ void tuxCharacterObject::applyGravity(tuxWorld *world) {
                 trans.setRotation(dq * q);
                 body->setWorldTransform(trans);
             }
+
+            // Store up direction vector
+            m_upDir = n;
         }
     }
 }

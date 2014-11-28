@@ -10,8 +10,9 @@ static bool gRight = 0;
 static bool gJump = 0;
 
 tuxGlutBtApplication::tuxGlutBtApplication()
-    : m_cameraHeight(4.) {
-    m_cameraPosition = btVector3(30, 30, 30);
+    : m_cameraHeight(4.0) {
+    m_cameraPosition = btVector3(30.0, 30.0, 30.0);
+    m_playerAngle = 0.0;
 }
 
 tuxGlutBtApplication::~tuxGlutBtApplication() {
@@ -88,44 +89,42 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         }
 
         //set walkDirection for our character
-        btTransform xform;
-        btCollisionObject *player = m_player->getCollisionObject();
-        xform = player->getWorldTransform();
-
-        btVector3 forwardDir = xform.getBasis()[2];
+        const btVector3 rightDir(1.0, 0.0, 0.0);
+        btVector3 upDir = m_player->getUpDir();
+        btQuaternion q = btQuaternion(upDir, m_playerAngle);
+        btVector3 axis = rightDir * btMatrix3x3(q);
+        btVector3 forwardDir = axis.cross(upDir);
         //printf("forwardDir=%f,%f,%f\n",forwardDir[0],forwardDir[1],forwardDir[2]);
-        btVector3 upDir = xform.getBasis()[1];
-        btVector3 strafeDir = xform.getBasis()[0];
-        forwardDir.normalize();
-        upDir.normalize();
-        strafeDir.normalize();
 
+        btCollisionObject *player = m_player->getCollisionObject();
         btVector3 walkDirection = btVector3(0.0, 0.0, 0.0);
         btScalar walkVelocity = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
         btScalar walkSpeed = walkVelocity;// * dt;
 
         //rotate view
         if (gLeft) {
+            m_playerAngle -= 0.01;
             btMatrix3x3 orn = player->getWorldTransform().getBasis();
-            orn *= btMatrix3x3(btQuaternion(upDir, 0.01));
+            orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), 0.01));
             player->getWorldTransform().setBasis(orn);
         }
 
         if (gRight) {
+            m_playerAngle += 0.01;
             btMatrix3x3 orn = player->getWorldTransform().getBasis();
-            orn *= btMatrix3x3(btQuaternion(upDir, -0.01));
+            orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), -0.01));
             player->getWorldTransform().setBasis(orn);
         }
 
         if (gForward) {
             walkDirection += forwardDir;
-            m_player->getBody()->setLinearVelocity(walkDirection * walkSpeed);
         }
 
         if (gBackward) {
             walkDirection -= forwardDir;
-            m_player->getBody()->setLinearVelocity(walkDirection * walkSpeed);
         }
+
+        m_player->getBody()->setLinearVelocity(walkDirection * walkSpeed);
 
         int numSimSteps = dynamicsWorld->stepSimulation(dt, maxSimSubSteps);
 
