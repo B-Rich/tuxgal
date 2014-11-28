@@ -90,7 +90,7 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         //set walkDirection for our character
         btTransform xform;
         btCollisionObject *player = m_player->getCollisionObject();
-        xform = player->getWorldTransform ();
+        xform = player->getWorldTransform();
 
         btVector3 forwardDir = xform.getBasis()[2];
         //printf("forwardDir=%f,%f,%f\n",forwardDir[0],forwardDir[1],forwardDir[2]);
@@ -107,13 +107,13 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         //rotate view
         if (gLeft) {
             btMatrix3x3 orn = player->getWorldTransform().getBasis();
-            orn *= btMatrix3x3(btQuaternion(btVector3(0, 1, 0), 0.01));
+            orn *= btMatrix3x3(btQuaternion(upDir, 0.01));
             player->getWorldTransform().setBasis(orn);
         }
 
         if (gRight) {
             btMatrix3x3 orn = player->getWorldTransform().getBasis();
-            orn *= btMatrix3x3(btQuaternion(btVector3(0, 1, 0), -0.01));
+            orn *= btMatrix3x3(btQuaternion(upDir, -0.01));
             player->getWorldTransform().setBasis(orn);
         }
 
