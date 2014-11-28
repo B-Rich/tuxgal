@@ -55,6 +55,7 @@ void tuxGlutBtApplication::initPhysics() {
     tuxCharacterObject *player = new tuxCharacterObject(btVector3(0, 0, 0));
     if (player) {
         m_world->addObject(player);
+        player->getBody()->setActivationState(DISABLE_DEACTIVATION);
         m_player = player;
     }
 
@@ -94,6 +95,7 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         btQuaternion q = btQuaternion(upDir, m_playerAngle);
         btVector3 axis = rightDir * btMatrix3x3(q);
         btVector3 forwardDir = axis.cross(upDir);
+        forwardDir.normalize();
         //printf("forwardDir=%f,%f,%f\n",forwardDir[0],forwardDir[1],forwardDir[2]);
 
         btCollisionObject *player = m_player->getCollisionObject();
