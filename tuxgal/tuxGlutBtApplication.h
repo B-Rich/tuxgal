@@ -37,7 +37,7 @@ public:
 
 private:
     tuxWorld *m_world;
-    btRigidBody *m_player;
+    tuxCharacterObject *m_player;
     btScalar m_cameraHeight;
 };
 

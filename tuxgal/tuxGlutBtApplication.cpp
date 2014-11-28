@@ -54,7 +54,7 @@ void tuxGlutBtApplication::initPhysics() {
     tuxCharacterObject *player = new tuxCharacterObject(btVector3(0, 0, 0));
     if (player) {
         m_world->addObject(player);
-        m_player = player->getBody();
+        m_player = player;
     }
 
     addCharacterObject(btVector3(10, 0, 0), 1, 5, 1, 0.5);
@@ -62,7 +62,7 @@ void tuxGlutBtApplication::initPhysics() {
     addCharacterObject(btVector3(0, 0, 10), 1, 5, 1, 0.5);
     addCharacterObject(btVector3(0, 0, -10), 1, 5, 1, 0.5);
 
-    setCameraDistance(56.);
+    setCameraDistance(56.0);
 }
 
 void tuxGlutBtApplication::renderme() {
@@ -76,7 +76,7 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float dt = getDeltaTimeMicroseconds() * .000001;
+    float dt = getDeltaTimeMicroseconds() * 0.000001;
 
     if (dynamicsWorld) {
         m_world->applyGravity();
@@ -84,12 +84,12 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         //during idle mode, just run 1 simulation step maximum
         int maxSimSubSteps = m_idle ? 1 : 2;
         if (m_idle) {
-            dt = 1. / 420.;
+            dt = 1.0 / 420.0;
         }
 
         //set walkDirection for our character
         btTransform xform;
-        btCollisionObject *player = (btCollisionObject *) m_player;
+        btCollisionObject *player = m_player->getCollisionObject();
         xform = player->getWorldTransform ();
 
         btVector3 forwardDir = xform.getBasis()[2];
@@ -101,35 +101,33 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         strafeDir.normalize();
 
         btVector3 walkDirection = btVector3(0.0, 0.0, 0.0);
-        btScalar walkVelocity = btScalar(1.1) * 16.0; // 4 km/h -> 1.1 m/s
-        btScalar walkSpeed = walkVelocity * dt;
+        btScalar walkVelocity = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
+        btScalar walkSpeed = walkVelocity;// * dt;
 
         //rotate view
         if (gLeft) {
             btMatrix3x3 orn = player->getWorldTransform().getBasis();
             orn *= btMatrix3x3(btQuaternion(btVector3(0, 1, 0), 0.01));
-            player->getWorldTransform ().setBasis(orn);
+            player->getWorldTransform().setBasis(orn);
         }
 
         if (gRight) {
             btMatrix3x3 orn = player->getWorldTransform().getBasis();
             orn *= btMatrix3x3(btQuaternion(btVector3(0, 1, 0), -0.01));
-            player->getWorldTransform ().setBasis(orn);
+            player->getWorldTransform().setBasis(orn);
         }
 
         if (gForward) {
             walkDirection += forwardDir;
-            //TODO: walkDirection * walkSpeed
-            m_player->setLinearVelocity(3 * walkDirection);
+            m_player->getBody()->setLinearVelocity(walkDirection * walkSpeed);
         }
 
         if (gBackward) {
             walkDirection -= forwardDir;
-            //TODO: walkDirection * walkSpeed
-            m_player->setLinearVelocity(-3 * walkDirection);
+            m_player->getBody()->setLinearVelocity(walkDirection * walkSpeed);
         }
 
-        int numSimSteps = dynamicsWorld->stepSimulation(dt,maxSimSubSteps);
+        int numSimSteps = dynamicsWorld->stepSimulation(dt, maxSimSubSteps);
 
         //optional but useful: debug drawing
         if (dynamicsWorld) {
@@ -253,7 +251,7 @@ void tuxGlutBtApplication::updateCamera()
     btTransform characterWorldTrans;
 
     //look at the vehicle
-    btCollisionObject *player = (btCollisionObject *) m_player;
+    btCollisionObject *player = m_player->getCollisionObject();
     characterWorldTrans = player->getWorldTransform();
     btVector3 up = characterWorldTrans.getBasis()[1];
     btVector3 backward = -characterWorldTrans.getBasis()[2];

@@ -8,6 +8,9 @@ class tuxWorld;
 class tuxObject {
 public:
     btRigidBody* getBody() const { return m_body; }
+    btCollisionObject* getCollisionObject() const {
+        return (btCollisionObject *) m_body;
+    }
 
     virtual void applyGravity(tuxWorld *world) = 0;
 

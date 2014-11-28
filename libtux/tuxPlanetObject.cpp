@@ -5,8 +5,8 @@ tuxPlanetObject::tuxPlanetObject(btVector3 pos, btScalar radius) {
     planetTransform.setIdentity();
     planetTransform.setOrigin(pos);
 
-    btScalar planetMass(0.); //the mass is 0, because the planet is immovable
-    btVector3 localGroundInertia(0., 0., 0.);
+    btScalar planetMass(0.0); //the mass is 0, because the planet is immovable
+    btVector3 localGroundInertia(0.0, 0.0, 0.0);
 
     btCollisionShape *planetShape = new btSphereShape(radius);
     addCollisionShape(planetShape);

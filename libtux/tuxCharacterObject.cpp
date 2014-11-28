@@ -15,7 +15,7 @@ tuxCharacterObject::tuxCharacterObject(
     btTransform startTransform;
     startTransform.setIdentity();
 
-    btVector3 localInertia(0, 0, 0);
+    btVector3 localInertia(0.0, 0.0, 0.0);
 
     startTransform.setOrigin(pos);
     newRigidShape->calculateLocalInertia(mass, localInertia);
@@ -33,8 +33,8 @@ tuxCharacterObject::tuxCharacterObject(
     rbInfo.m_friction = friction;
     btRigidBody *body = new btRigidBody(rbInfo);
     if (body) {
-        body->setAngularFactor(0);
-        body->setRestitution(1);
+        body->setAngularFactor(0.0);
+        body->setRestitution(1.0);
         body->setUserPointer(this);
         setBody(body);
     }
