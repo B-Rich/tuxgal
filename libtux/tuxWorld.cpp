@@ -1,7 +1,6 @@
 #include "tuxWorld.h"
 
 bool tuxWorld::init() {
-    bool result = false;
 
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
     m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
@@ -20,14 +19,38 @@ bool tuxWorld::init() {
     m_dynamicsWorld->getDispatchInfo().m_allowedCcdPenetration=0.0001f;
     if (m_dynamicsWorld) {
         m_gravityCenter = btVector3(.0, .0, .0);
-        result = true;
+        m_initialized = true;
     }
 
-    return result;
+    return m_initialized;
 }
 
-void tuxWorld::applyGravity()
-{
+tuxWorld::~tuxWorld() {
+
+    if (m_initialized) {
+        for (int i = m_dynamicsWorld->getNumCollisionObjects() - 1;
+             i >= 0;
+             i--) {
+            btCollisionObject* obj =
+                m_dynamicsWorld->getCollisionObjectArray()[i];
+            btRigidBody* body = btRigidBody::upcast(obj);
+            if (body && body->getMotionState()) {
+                delete body->getMotionState();
+            }
+            m_dynamicsWorld->removeCollisionObject( obj );
+            delete obj;
+        }
+
+        delete m_dynamicsWorld;
+        delete m_constraintSolver;
+        delete m_overlappingPairCache;
+        delete m_dispatcher;
+        delete m_collisionConfiguration;
+    }
+}
+
+void tuxWorld::applyGravity() {
+
     btCollisionObjectArray objects = m_dynamicsWorld->getCollisionObjectArray();
     for (int i = 0; i < objects.size(); i++) {
 

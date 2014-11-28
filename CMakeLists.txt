@@ -15,9 +15,6 @@ INCLUDE_DIRECTORIES(${TUXGAL_SOURCE_DIR}/include/tux
                     ${Boost_INCLUDE_DIRS}
                     ${BULLET_INCLUDE_DIRS})
 ADD_SUBDIRECTORY(GlutBtApplication)
-ADD_SUBDIRECTORY(BspLoader)
-ADD_SUBDIRECTORY(CharacterDemo)
-ADD_SUBDIRECTORY(PlanetDemo)
 ADD_SUBDIRECTORY(libtux)
 ADD_SUBDIRECTORY(tuxgal)
 

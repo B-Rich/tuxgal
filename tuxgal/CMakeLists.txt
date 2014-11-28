@@ -17,6 +17,7 @@ LINK_LIBRARIES(
  tux GlutBtApplication ${BULLET_LIBRARIES} ${GLUT_glut_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
 )
 SET(tuxgal_SRCS
+        tuxGlutBtApplication.cpp
 	main.cpp
 )
 

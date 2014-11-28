@@ -5,6 +5,11 @@
 
 class tuxWorld {
 public:
+    tuxWorld()
+        : m_initialized(false) { }
+
+    ~tuxWorld();
+
     bool init();
 
     btDynamicsWorld* getDynamicsWorld() const { return m_dynamicsWorld; }
@@ -19,6 +24,8 @@ public:
     void applyGravity();
 
 private:
+    bool m_initialized;
+
     btDefaultCollisionConfiguration *m_collisionConfiguration;
     btCollisionDispatcher *m_dispatcher;
     btBroadphaseInterface *m_overlappingPairCache;

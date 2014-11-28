@@ -1,24 +1,15 @@
-#include <iostream>
-#include "tuxWorld.h"
-#include "tuxPlanetObject.h"
+#include "tuxGlutBtApplication.h"
+#include "GLDebugDrawer.h"
 
-int main(void)
-{
-    tuxWorld *world = new tuxWorld;
+GLDebugDrawer gDebugDrawer;
 
-    if (!world->init()) {
-        std::cerr << "Error -- Unable to create world" << std::endl;
-        return 1;
-    }
+int main(int argc,char** argv) {
 
-    btVector3 gravityCenter(btVector3(0, -20, 0));
-    world->setGravityCenter(gravityCenter);
+    tuxGlutBtApplication* app = new tuxGlutBtApplication;
 
-    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 40);
-    if (planet) {
-        world->addObject(planet);
-    }
+    app->initPhysics();
+    app->getDynamicsWorld()->setDebugDrawer(&gDebugDrawer);
 
-    return 0;
+    return glutmain(argc, argv, 800, 600,"Tux Galaxy", app);
 }
 
