@@ -9,7 +9,6 @@ tuxPlanetObject::tuxPlanetObject(btVector3 pos, btScalar radius) {
     btVector3 localGroundInertia(0.0, 0.0, 0.0);
 
     btCollisionShape *planetShape = new btSphereShape(radius);
-    addCollisionShape(planetShape);
     btDefaultMotionState *planetMotionState =
         new btDefaultMotionState(planetTransform);
 
@@ -21,10 +20,10 @@ tuxPlanetObject::tuxPlanetObject(btVector3 pos, btScalar radius) {
         planetShape,
         localGroundInertia
         );
-    btRigidBody *body = new btRigidBody(planetRBInfo);
-    if (body) {
-        body->setUserPointer(this);
-        setBody(body);
+    btRigidBody *planetBody = new btRigidBody(planetRBInfo);
+    if (planetBody) {
+        planetBody->setUserPointer(this);
+        init(planetShape, planetBody);
     }
 }
 

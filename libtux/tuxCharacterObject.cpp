@@ -8,8 +8,7 @@ tuxCharacterObject::tuxCharacterObject(
     btScalar mass,
     btScalar friction
     ) {
-    btCollisionShape* newRigidShape = new btCapsuleShape(width, height);
-    addCollisionShape(newRigidShape);
+    btCollisionShape* characterShape = new btCapsuleShape(width, height);
 
     //set the initial position and transform. We set tranform none
     btTransform startTransform;
@@ -18,26 +17,26 @@ tuxCharacterObject::tuxCharacterObject(
     btVector3 localInertia(0.0, 0.0, 0.0);
 
     startTransform.setOrigin(pos);
-    newRigidShape->calculateLocalInertia(mass, localInertia);
+    characterShape->calculateLocalInertia(mass, localInertia);
 
     //actually construct the body and add it to the dynamics world
-    btDefaultMotionState *myMotionState =
+    btDefaultMotionState *characterMotionState =
         new btDefaultMotionState(startTransform);
 
     btRigidBody::btRigidBodyConstructionInfo rbInfo(
         mass,
-        myMotionState,
-        newRigidShape,
+        characterMotionState,
+        characterShape,
         localInertia
         );
     rbInfo.m_friction = friction;
-    btRigidBody *body = new btRigidBody(rbInfo);
-    if (body) {
-        body->setAngularFactor(0.0);
-        body->setRestitution(1.0);
-        body->setUserPointer(this);
+    btRigidBody *characterBody = new btRigidBody(rbInfo);
+    if (characterBody) {
+        characterBody->setAngularFactor(0.0);
+        characterBody->setRestitution(1.0);
+        characterBody->setUserPointer(this);
         m_upDir = btVector3(0.0, 1.0, 0.0);
-        setBody(body);
+        init(characterShape, characterBody);
     }
 }
 

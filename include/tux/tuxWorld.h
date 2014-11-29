@@ -17,9 +17,7 @@ public:
 
     void setGravityCenter(btVector3 center) { m_gravityCenter = center; }
 
-    void addObject(tuxObject *object) {
-        m_dynamicsWorld->addRigidBody(object->getBody());
-    }
+    void addObject(tuxObject *object);
 
     void applyGravity();
 
@@ -31,6 +29,8 @@ private:
     btBroadphaseInterface *m_overlappingPairCache;
     btConstraintSolver *m_constraintSolver;
     btDynamicsWorld *m_dynamicsWorld;
+
+    btAlignedObjectArray<btCollisionShape*> m_shapes;
 
     btVector3 m_gravityCenter;
 };

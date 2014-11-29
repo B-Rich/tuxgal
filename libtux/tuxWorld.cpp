@@ -1,7 +1,11 @@
 #include "tuxWorld.h"
 
-bool tuxWorld::init() {
+void tuxWorld::addObject(tuxObject *object) {
+    m_shapes.push_back(object->getShape());
+    m_dynamicsWorld->addRigidBody(object->getBody());
+}
 
+bool tuxWorld::init() {
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
     m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
     btVector3 worldMin(-1000., -1000., -1000.);
@@ -26,7 +30,6 @@ bool tuxWorld::init() {
 }
 
 tuxWorld::~tuxWorld() {
-
     if (m_initialized) {
         for (int i = m_dynamicsWorld->getNumCollisionObjects() - 1;
              i >= 0;
@@ -39,6 +42,11 @@ tuxWorld::~tuxWorld() {
             }
             m_dynamicsWorld->removeCollisionObject( obj );
             delete obj;
+
+            for (int j = 0; j < m_shapes.size(); j++) {
+                btCollisionShape* shape = m_shapes[j];
+                delete shape;
+            }
         }
 
         delete m_dynamicsWorld;
@@ -50,7 +58,6 @@ tuxWorld::~tuxWorld() {
 }
 
 void tuxWorld::applyGravity() {
-
     btCollisionObjectArray objects = m_dynamicsWorld->getCollisionObjectArray();
     for (int i = 0; i < objects.size(); i++) {
 

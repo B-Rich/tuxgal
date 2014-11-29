@@ -7,6 +7,7 @@ class tuxWorld;
 
 class tuxObject {
 public:
+    btCollisionShape* getShape() const { return m_shape; }
     btRigidBody* getBody() const { return m_body; }
     btCollisionObject* getCollisionObject() const {
         return (btCollisionObject *) m_body;
@@ -16,16 +17,15 @@ public:
 
 protected:
     tuxObject()
-        : m_body(0) { }
+        : m_initialized(false),
+          m_shape(0),
+          m_body(0) { }
 
-    void addCollisionShape(btCollisionShape *shape) {
-        m_collisionShapes.push_back(shape);
-    }
-
-    void setBody(btRigidBody *body) { m_body = body; }
+    void init(btCollisionShape *shape, btRigidBody *body);
 
 private:
-    static btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
+    bool m_initialized;
+    btCollisionShape *m_shape;
     btRigidBody *m_body;
 };
 
