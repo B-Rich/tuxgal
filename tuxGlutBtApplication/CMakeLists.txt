@@ -14,21 +14,25 @@ INCLUDE_DIRECTORIES(
 )
 
 LINK_LIBRARIES(
- tux GlutBtApplication ${BULLET_LIBRARIES} ${GLUT_glut_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
-)
-SET(tuxgal_SRCS
-        tuxGlutBtApplication.cpp
-	main.cpp
-)
+    tux
+    GlutBtApplication
+    boost_system ${Boost_LIBRARIES}
+    ${BULLET_LIBRARIES}
+    ${GLUT_glut_LIBRARY} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
+    )
 
-	ADD_EXECUTABLE(tuxgal
-		${tuxgal_SRCS}
-	)
+SET(tuxdemo_SRCS
+    tuxGlutBtApplication.cpp
+    main.cpp
+    )
 
-
+ADD_EXECUTABLE(tuxdemo
+    ${tuxdemo_SRCS}
+    )
 
 IF (INTERNAL_ADD_POSTFIX_EXECUTABLE_NAMES)
-			SET_TARGET_PROPERTIES(tuxgal PROPERTIES  DEBUG_POSTFIX "_Debug")
-			SET_TARGET_PROPERTIES(tuxgal PROPERTIES  MINSIZEREL_POSTFIX "_MinsizeRel")
-			SET_TARGET_PROPERTIES(tuxgal PROPERTIES  RELWITHDEBINFO_POSTFIX "_RelWithDebugInfo")
+    SET_TARGET_PROPERTIES(tuxdemo PROPERTIES  DEBUG_POSTFIX "_Debug")
+    SET_TARGET_PROPERTIES(tuxdemo PROPERTIES  MINSIZEREL_POSTFIX "_MinsizeRel")
+    SET_TARGET_PROPERTIES(tuxdemo PROPERTIES  RELWITHDEBINFO_POSTFIX "_RelWithDebugInfo")
 ENDIF(INTERNAL_ADD_POSTFIX_EXECUTABLE_NAMES)
+

@@ -20,6 +20,7 @@ public:
     void addObject(tuxObject *object);
 
     void applyGravity();
+    void applyTransform();
 
 private:
     bool m_initialized;

@@ -3,10 +3,10 @@
 
 tuxCharacterObject::tuxCharacterObject(
     btVector3 pos,
-    btScalar width,
-    btScalar height,
-    btScalar mass,
-    btScalar friction
+    btScalar  width,
+    btScalar  height,
+    btScalar  mass,
+    btScalar  friction
     ) {
     btCollisionShape* characterShape = new btCapsuleShape(width, height);
 
@@ -42,9 +42,10 @@ tuxCharacterObject::tuxCharacterObject(
 
 void tuxCharacterObject::applyGravity(tuxWorld *world) {
 
-    btRigidBody *body = getBody();
-    if (body) {
-        if (body->getMotionState()) {
+    if (getInitialized()) {
+        btRigidBody *body = getBody();
+
+        if (body && body->getMotionState()) {
             btVector3 gravityCenter = world->getGravityCenter();
 
             // Get transformation

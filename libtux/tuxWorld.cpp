@@ -8,8 +8,8 @@ void tuxWorld::addObject(tuxObject *object) {
 bool tuxWorld::init() {
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
     m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
-    btVector3 worldMin(-1000., -1000., -1000.);
-    btVector3 worldMax(1000., 1000., 1000.);
+    btVector3 worldMin(-1000.0, -1000.0, -1000.0);
+    btVector3 worldMax(1000.0, 1000.0, 1000.0);
     btAxisSweep3* sweepBP = new btAxisSweep3(worldMin, worldMax);
     m_overlappingPairCache = sweepBP;
 
@@ -20,9 +20,9 @@ bool tuxWorld::init() {
         m_constraintSolver,
         m_collisionConfiguration
     );
-    m_dynamicsWorld->getDispatchInfo().m_allowedCcdPenetration=0.0001f;
+    m_dynamicsWorld->getDispatchInfo().m_allowedCcdPenetration = 0.0001;
     if (m_dynamicsWorld) {
-        m_gravityCenter = btVector3(.0, .0, .0);
+        m_gravityCenter = btVector3(0.0, 0.0, 0.0);
         m_initialized = true;
     }
 
@@ -66,6 +66,19 @@ void tuxWorld::applyGravity() {
         tuxObject *object = (tuxObject *) body->getUserPointer();
         if (object) {
             object->applyGravity(this);
+        }
+    }
+}
+
+void tuxWorld::applyTransform() {
+    btCollisionObjectArray objects = m_dynamicsWorld->getCollisionObjectArray();
+    for (int i = 0; i < objects.size(); i++) {
+
+        btCollisionObject *collisionObject = objects[i];
+        btRigidBody *body = btRigidBody::upcast(collisionObject);
+        tuxObject *object = (tuxObject *) body->getUserPointer();
+        if (object) {
+            object->applyTransform();
         }
     }
 }
