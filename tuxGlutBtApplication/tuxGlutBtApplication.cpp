@@ -12,7 +12,6 @@ static bool gJump = 0;
 tuxGlutBtApplication::tuxGlutBtApplication()
     : m_cameraHeight(4.0) {
     m_cameraPosition = btVector3(30.0, 30.0, 30.0);
-    m_playerAngle = 0.0;
 }
 
 tuxGlutBtApplication::~tuxGlutBtApplication() {
@@ -90,37 +89,27 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         }
 
         //set walkDirection for our character
+        btTransform trans = m_player->getBody()->getWorldTransform();
         btVector3 upDir = m_player->getUpDir();
-#define FORWARD1 1
-#ifdef FORWARD1
-        btQuaternion q = btQuaternion(upDir, m_playerAngle);
-        btVector3 forwardDir = m_player->getForwardDir() * btMatrix3x3(q);
-#else
         const btVector3 localForward(0.0, 0.0, -1.0);
-        btTransform t = m_player->getBody()->getWorldTransform();
-        btQuaternion q = t.getRotation();
-        btVector3 forwardDir = btMatrix3x3(q) * localForward;
-#endif
+        btVector3 forwardDir = trans.getBasis() * localForward;
         //printf("forwardDir=%f,%f,%f\n",forwardDir[0],forwardDir[1],forwardDir[2]);
 
-        btCollisionObject *player = m_player->getCollisionObject();
         btVector3 walkDirection = btVector3(0.0, 0.0, 0.0);
         btScalar walkVelocity = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
         btScalar walkSpeed = walkVelocity;// * dt;
 
         //rotate view
         if (gLeft) {
-            m_playerAngle -= 0.01;
-            btMatrix3x3 orn = player->getWorldTransform().getBasis();
+            btMatrix3x3 orn = trans.getBasis();
             orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), 0.01));
-            player->getWorldTransform().setBasis(orn);
+            m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
         }
 
         if (gRight) {
-            m_playerAngle += 0.01;
-            btMatrix3x3 orn = player->getWorldTransform().getBasis();
+            btMatrix3x3 orn = trans.getBasis();
             orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), -0.01));
-            player->getWorldTransform().setBasis(orn);
+            m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
         }
 
         if (gForward) {

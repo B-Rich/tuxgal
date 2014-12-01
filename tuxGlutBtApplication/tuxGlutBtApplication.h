@@ -38,7 +38,6 @@ public:
 private:
     tuxWorld *m_world;
     tuxCharacterObject *m_player;
-    btScalar m_playerAngle;
     btScalar m_cameraHeight;
 };
 

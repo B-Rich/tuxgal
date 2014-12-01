@@ -177,7 +177,9 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     if (dynamicsWorld) {
         dynamicsWorld->stepSimulation(1.0 / 60.0);
         m_world->applyGravity();
-        btVector3 forwardDir = m_player->getForwardDir();
+        const btVector3 localForward(0.0, 0.0, -1.0);
+        btTransform trans = m_player->getBody()->getWorldTransform();
+        btVector3 forwardDir = trans.getBasis() * localForward;
         m_player->getBody()->setLinearVelocity(1.0 * 16.0 * forwardDir);
         m_world->applyTransform();
     }
