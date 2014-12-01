@@ -91,8 +91,16 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
 
         //set walkDirection for our character
         btVector3 upDir = m_player->getUpDir();
+#define FORWARD1 1
+#ifdef FORWARD1
         btQuaternion q = btQuaternion(upDir, m_playerAngle);
         btVector3 forwardDir = m_player->getForwardDir() * btMatrix3x3(q);
+#else
+        const btVector3 localForward(0.0, 0.0, -1.0);
+        btTransform t = m_player->getBody()->getWorldTransform();
+        btQuaternion q = t.getRotation();
+        btVector3 forwardDir = btMatrix3x3(q) * localForward;
+#endif
         //printf("forwardDir=%f,%f,%f\n",forwardDir[0],forwardDir[1],forwardDir[2]);
 
         btCollisionObject *player = m_player->getCollisionObject();
@@ -116,11 +124,11 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         }
 
         if (gForward) {
-            walkDirection += forwardDir;
+            walkDirection -= forwardDir;
         }
 
         if (gBackward) {
-            walkDirection -= forwardDir;
+            walkDirection += forwardDir;
         }
 
         m_player->getBody()->setLinearVelocity(walkDirection * walkSpeed);

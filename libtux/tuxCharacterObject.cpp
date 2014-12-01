@@ -36,7 +36,7 @@ tuxCharacterObject::tuxCharacterObject(
         characterBody->setRestitution(1.0);
         characterBody->setUserPointer(this);
         m_upDir = btVector3(0.0, 1.0, 0.0);
-        m_forwardDir = btVector3(0.0, 0.0, 1.0);
+        m_forwardDir = btVector3(0.0, 0.0, -1.0);
         init(characterShape, characterBody);
     }
 }

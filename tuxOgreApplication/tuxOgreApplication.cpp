@@ -106,10 +106,10 @@ void tuxOgreApplication::initPlanet() {
     m_world = new tuxWorld;
     m_world->init();
 
-    btVector3 gravityCenter(btVector3(0.0, -50.0, 0.0));
+    btVector3 gravityCenter(btVector3(0.0, 0.0, 0.0));
     m_world->setGravityCenter(gravityCenter);
 
-    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 100.0);
+    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 300.0);
     if (planet) {
         Ogre::SceneManager *sceneManager = getSceneManager();
         Ogre::SceneNode *rootNode = sceneManager->getRootSceneNode();
@@ -119,14 +119,16 @@ void tuxOgreApplication::initPlanet() {
             );
         Ogre::SceneNode *node = rootNode->createChildSceneNode();
         node->attachObject(entity);
+        // Mesh has scale 100
+        node->scale(3.0, 3.0, 3.0);
         planet->attachNode(node);
         m_world->addObject(planet);
     }
 
     tuxCharacterObject *player = new tuxCharacterObject(
-        btVector3(0.0, 300.0, 0.0),
-        100.0,
-        100.0
+        btVector3(0.0, 320.0, 0.0),
+        10.0,
+        10.0
         );
     if (player) {
         Ogre::SceneManager *sceneManager = getSceneManager();
@@ -141,7 +143,7 @@ void tuxOgreApplication::initPlanet() {
         m_world->addObject(player);
         player->getBody()->setActivationState(DISABLE_DEACTIVATION);
 //TODO: Replace with user controlled movement
-player->getBody()->setLinearVelocity(btVector3(20.0, 0.0, -20.0));
+//player->getBody()->setLinearVelocity(btVector3(20.0, 0.0, -20.0));
         m_player = player;
     }
 }
@@ -175,6 +177,8 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     if (dynamicsWorld) {
         dynamicsWorld->stepSimulation(1.0 / 60.0);
         m_world->applyGravity();
+        btVector3 forwardDir = m_player->getForwardDir();
+        m_player->getBody()->setLinearVelocity(1.0 * 16.0 * forwardDir);
         m_world->applyTransform();
     }
 
