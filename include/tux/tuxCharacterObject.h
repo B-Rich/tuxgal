@@ -14,11 +14,13 @@ public:
         );
 
     btVector3 getUpDir() const { return m_upDir; }
+    btVector3 getForwardDir() const { return m_forwardDir; }
 
     virtual void applyGravity(tuxWorld *world);
 
 private:
     btVector3 m_upDir;
+    btVector3 m_forwardDir;
 };
 
 #endif //TUX_CHARACTER_OBJECT_H
