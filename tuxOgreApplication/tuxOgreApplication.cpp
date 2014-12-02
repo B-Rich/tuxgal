@@ -176,6 +176,68 @@ Ogre::SceneNode* tuxOgreApplication::loadMesh(Ogre::String name) {
     return lNode;
 }
 
+void tuxOgreApplication::updateCamera() {
+//#define DISABLE_CAMERA 1
+#ifdef DISABLE_CAMERA
+    return;
+#endif //DISABLE_CAMERA
+
+    btTransform characterWorldTrans;
+
+    //look at the vehicle
+    btCollisionObject *player = m_player->getCollisionObject();
+    characterWorldTrans = player->getWorldTransform();
+    btVector3 up = characterWorldTrans.getBasis()[1];
+    btVector3 backward = -characterWorldTrans.getBasis()[2];
+    up.normalize();
+    backward.normalize();
+
+    m_cameraTargetPosition = characterWorldTrans.getOrigin();
+    m_cameraPosition = m_cameraTargetPosition + up * 10.0 + backward * 200.0;
+
+    //use the convex sweep test to find a safe position for the camera (not blocked by static geometry)
+    btSphereShape cameraSphere(0.2);
+    btTransform cameraFrom, cameraTo;
+    cameraFrom.setIdentity();
+    cameraFrom.setOrigin(characterWorldTrans.getOrigin());
+    cameraTo.setIdentity();
+    cameraTo.setOrigin(m_cameraPosition);
+
+    btCollisionWorld::ClosestConvexResultCallback cb(
+        characterWorldTrans.getOrigin(), cameraTo.getOrigin()
+        );
+    cb.m_collisionFilterMask = btBroadphaseProxy::StaticFilter;
+
+    m_world->getDynamicsWorld()->convexSweepTest(
+        &cameraSphere,
+        cameraFrom,
+        cameraTo,
+        cb
+        );
+    if (cb.hasHit()) {
+
+        btScalar minFraction  = cb.m_closestHitFraction;
+        m_cameraPosition.setInterpolate3(
+            cameraFrom.getOrigin(),cameraTo.getOrigin(),minFraction
+            );
+    }
+
+    mCamera->setPosition(
+        Ogre::Vector3(
+            m_cameraPosition[0],
+            m_cameraPosition[1],
+            m_cameraPosition[2]
+            )
+        );
+    mCamera->lookAt(
+        Ogre::Vector3(
+            m_cameraTargetPosition[0],
+            m_cameraTargetPosition[1],
+            m_cameraTargetPosition[2]
+            )
+        );
+}
+
 bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     bool result = false;
 
@@ -187,8 +249,9 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
         const btVector3 localForward(0.0, 0.0, -1.0);
         btTransform trans = m_player->getBody()->getWorldTransform();
         btVector3 forwardDir = trans.getBasis() * localForward;
-        m_player->getBody()->setLinearVelocity(-1.0 * 16.0 * forwardDir);
+        m_player->getBody()->setLinearVelocity(-1.1 * 16.0 * forwardDir);
         m_world->applyTransform();
+        updateCamera();
         result = true;
     }
 
