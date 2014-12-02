@@ -82,6 +82,9 @@ void tuxOgreApplication::initScene() {
     mCamera->setPosition(Ogre::Vector3(0, 0, 1000));
     mCamera->lookAt(Ogre::Vector3(0, 0, 0));
 
+    Ogre::Animation::setDefaultInterpolationMode(Ogre::Animation::IM_LINEAR);
+    Ogre::Animation::setDefaultRotationInterpolationMode(Ogre::Animation::RIM_LINEAR);
+
     mWindow->setActive(true);
     mWindow->setAutoUpdated(false);
 }
@@ -135,15 +138,18 @@ void tuxOgreApplication::initPlanet() {
         Ogre::SceneNode *rootNode = sceneManager->getRootSceneNode();
         Ogre::Entity *entity = sceneManager->createEntity(
             "player",
-            "cube.mesh"
+            "penguin.mesh"
             );
         Ogre::SceneNode *node = rootNode->createChildSceneNode();
         node->attachObject(entity);
+
+        m_playerAnimState = entity->getAnimationState("amuse");
+        m_playerAnimState->setEnabled(true);
+        m_playerAnimState->setLoop(true);
+
         player->attachNode(node);
         m_world->addObject(player);
         player->getBody()->setActivationState(DISABLE_DEACTIVATION);
-//TODO: Replace with user controlled movement
-//player->getBody()->setLinearVelocity(btVector3(20.0, 0.0, -20.0));
         m_player = player;
     }
 }
@@ -177,11 +183,13 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     if (dynamicsWorld) {
         dynamicsWorld->stepSimulation(1.0 / 60.0);
         m_world->applyGravity();
+        m_playerAnimState->addTime(evt.timeSinceLastFrame);
         const btVector3 localForward(0.0, 0.0, -1.0);
         btTransform trans = m_player->getBody()->getWorldTransform();
         btVector3 forwardDir = trans.getBasis() * localForward;
-        m_player->getBody()->setLinearVelocity(1.0 * 16.0 * forwardDir);
+        m_player->getBody()->setLinearVelocity(-1.0 * 16.0 * forwardDir);
         m_world->applyTransform();
+        result = true;
     }
 
     return result;

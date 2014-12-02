@@ -41,6 +41,8 @@ private:
     Ogre::SceneManager *mScene;
     Ogre::Camera *mCamera;
 
+    Ogre::AnimationState *m_playerAnimState;
+
     tuxWorld *m_world;
     tuxCharacterObject *m_player;
 };
