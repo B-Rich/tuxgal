@@ -38,3 +38,23 @@ tuxCharacterObject::tuxCharacterObject(
     }
 }
 
+void tuxCharacterObject::turn(btScalar angle) {
+    if (angle) {
+        btMatrix3x3 basis = getBody()->getWorldTransform().getBasis();
+        basis *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), angle));
+        getCollisionObject()->getWorldTransform().setBasis(basis);
+    }
+}
+
+void tuxCharacterObject::move(btScalar speed) {
+    if (speed) {
+        btTransform trans = getBody()->getWorldTransform();
+        const btVector3 localForward(0.0, 0.0, -1.0);
+        btVector3 forwardDir = trans.getBasis() * localForward;
+        getBody()->setLinearVelocity(forwardDir * speed);
+    }
+    else {
+        getBody()->setLinearVelocity(btVector3(0.0, 0.0, 0.0));
+    }
+}
+

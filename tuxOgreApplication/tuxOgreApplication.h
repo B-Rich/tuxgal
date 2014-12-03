@@ -34,7 +34,7 @@ public:
     void addGroup(Ogre::String name, Ogre::String dir);
     Ogre::SceneNode* loadMesh(Ogre::String name);
 
-    void movePlayer(btScalar walkVelocity);
+    void movePlayer(btScalar walkSpeed);
 
     void updateCamera();
 

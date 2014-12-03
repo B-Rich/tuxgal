@@ -225,46 +225,40 @@ Ogre::SceneNode* tuxOgreApplication::loadMesh(Ogre::String name) {
     return lNode;
 }
 
-void tuxOgreApplication::movePlayer(btScalar walkVelocity) {
+void tuxOgreApplication::movePlayer(btScalar walkSpeed) {
     OIS::Keyboard *keyboard = m_inputManager->getKeyboard();
     keyboard->capture();
     if (keyboard->isKeyDown(OIS::KC_Q)) {
         exit(0);
     }
 
-    btTransform trans = m_player->getBody()->getWorldTransform();
-    const btVector3 localForward(0.0, 0.0, -1.0);
-    btVector3 forwardDir = trans.getBasis() * localForward;
-    btVector3 walkDirection = btVector3(0.0, 0.0, 0.0);
-
     //rotate view
     if (keyboard->isKeyDown(OIS::KC_LEFT)) {
-        btMatrix3x3 orn = trans.getBasis();
-        orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), 0.004));
-        m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
+        m_player->turn(0.002);
     }
 
-    if (keyboard->isKeyDown(OIS::KC_RIGHT)) {
-        btMatrix3x3 orn = trans.getBasis();
-        orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), -0.004));
-        m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
+    else if (keyboard->isKeyDown(OIS::KC_RIGHT)) {
+        m_player->turn(-0.002);
     }
 
+    //move
+    btScalar speed;
     if (keyboard->isKeyDown(OIS::KC_UP)) {
-        walkDirection -= forwardDir;
+        speed = -walkSpeed;
         m_playerAnimState->setEnabled(true);
     }
 
     else if (keyboard->isKeyDown(OIS::KC_DOWN)) {
-        walkDirection += forwardDir;
+        speed = walkSpeed;
         m_playerAnimState->setEnabled(true);
     }
 
     else {
+        speed = 0.0;
         m_playerAnimState->setEnabled(false);
     }
                                           
-    m_player->getBody()->setLinearVelocity(walkDirection * walkVelocity);
+    m_player->move(speed);
 }
 
 void tuxOgreApplication::updateCamera() {
@@ -336,8 +330,8 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     if (dynamicsWorld) {
         dynamicsWorld->stepSimulation(1.0 / 60.0);
         m_world->applyGravity();
-        btScalar walkVelocity = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
-        movePlayer(walkVelocity);
+        btScalar walkSpeed = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
+        movePlayer(walkSpeed);
         m_playerAnimState->addTime(evt.timeSinceLastFrame);
         m_world->applyTransform();
         updateCamera();

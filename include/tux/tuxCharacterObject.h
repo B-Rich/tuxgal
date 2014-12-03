@@ -12,6 +12,9 @@ public:
         btScalar  mass = 1.0,
         btScalar  friction = 0.1
         );
+
+    void turn(btScalar angle);
+    void move(btScalar speed);
 };
 
 #endif //TUX_CHARACTER_OBJECT_H
