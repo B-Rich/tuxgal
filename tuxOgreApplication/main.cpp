@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
 
     app->initScene();
     app->initBasicLight();
+    app->initInput();
 
     app->addGroup("Mesh", ".");
     app->initPlanet();

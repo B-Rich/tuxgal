@@ -14,9 +14,11 @@ LINK_LIBRARIES(
     boost_system ${Boost_LIBRARIES}
     ${BULLET_LIBRARIES}
     ${OGRE_LIBRARIES}
+    ${OIS_LIBRARIES}
     )
 
 SET(tuxgal_SRCS
+    tuxInputManager.cpp
     tuxOgreApplication.cpp
     main.cpp
     )

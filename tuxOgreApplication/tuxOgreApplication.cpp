@@ -104,6 +104,18 @@ void tuxOgreApplication::initBasicLight() {
     mScene->setAmbientLight(lAmbientColour);
 }
 
+bool tuxOgreApplication::initInput() {
+    bool result = false;
+
+    m_inputManager = tuxInputManager::getSingletonPtr();
+    if (m_inputManager) {
+        m_inputManager->init(getWindow());
+        result = true;
+    }
+
+    return result;
+}
+
 void tuxOgreApplication::initPlanet() {
 
     m_world = new tuxWorld;
@@ -240,6 +252,12 @@ void tuxOgreApplication::updateCamera() {
 
 bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     bool result = false;
+
+    OIS::Keyboard *keyboard = m_inputManager->getKeyboard();
+    keyboard->capture();
+    if (keyboard->isKeyDown(OIS::KC_Q)) {
+        exit(0);
+    }
 
     btDynamicsWorld *dynamicsWorld = m_world->getDynamicsWorld();
     if (dynamicsWorld) {
