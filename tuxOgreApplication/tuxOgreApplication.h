@@ -2,6 +2,7 @@
 #define TUX_OGRE_APPLICATION
 
 #include "OgreFrameListener.h"
+#include "tuxInputManager.h"
 #include "tuxWorld.h"
 #include "tuxCharacterObject.h"
 
@@ -27,6 +28,7 @@ public:
     bool initOgre();
     void initScene();
     void initBasicLight();
+    bool initInput();
     void initPlanet();
 
     void addGroup(Ogre::String name, Ogre::String dir);
@@ -50,6 +52,8 @@ private:
     btScalar m_cameraHeight;
 
     Ogre::AnimationState *m_playerAnimState;
+
+    tuxInputManager *m_inputManager;
 
     tuxWorld *m_world;
     tuxCharacterObject *m_player;
