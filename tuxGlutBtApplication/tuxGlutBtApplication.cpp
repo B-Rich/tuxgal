@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "GL_ShapeDrawer.h"
 #include "GlutStuff.h"
+#include "tuxBoxObject.h"
 #include "tuxGlutBtApplication.h"
 
 static bool gForward = 0;
@@ -18,18 +19,18 @@ tuxGlutBtApplication::~tuxGlutBtApplication() {
     delete m_world;
 }
 
-void tuxGlutBtApplication::addCharacterObject(
+void tuxGlutBtApplication::addCubeObject(
     btVector3 pos,
-    btScalar width,
-    btScalar height,
+    btScalar size,
     btScalar mass,
     btScalar friction 
     ) {
 
-    tuxCharacterObject *object = new tuxCharacterObject(
+    tuxBoxObject *object = new tuxBoxObject(
         pos,
-        width,
-        height,
+        size,
+        size,
+        size,
         mass,
         friction
         );
@@ -58,10 +59,10 @@ void tuxGlutBtApplication::initPhysics() {
         m_player = player;
     }
 
-    addCharacterObject(btVector3(10, 0, 0), 1, 5, 1, 0.5);
-    addCharacterObject(btVector3(-10, 0, 0), 1, 5, 1, 0.5);
-    addCharacterObject(btVector3(0, 0, 10), 1, 5, 1, 0.5);
-    addCharacterObject(btVector3(0, 0, -10), 1, 5, 1, 0.5);
+    addCubeObject(btVector3(10, 0, 0), 3, 1, 0.5);
+    addCubeObject(btVector3(-10, 0, 0), 3, 1, 0.5);
+    addCubeObject(btVector3(0, 0, 10), 3, 1, 0.5);
+    addCubeObject(btVector3(0, 0, -10), 3, 1, 0.5);
 
     setCameraDistance(56.0);
 }

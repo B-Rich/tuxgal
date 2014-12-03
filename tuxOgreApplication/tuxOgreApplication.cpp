@@ -11,6 +11,7 @@
 #include "btBulletDynamicsCommon.h"
 #include "tuxObject.h"
 #include "tuxPlanetObject.h"
+#include "tuxBoxObject.h"
 #include "tuxOgreApplication.h"
 
 bool tuxOgreApplication::initOgre() {
@@ -116,6 +117,37 @@ bool tuxOgreApplication::initInput() {
     return result;
 }
 
+void tuxOgreApplication::addCubeObject(
+    Ogre::String name,
+    btVector3 pos,
+    btScalar size,
+    btScalar mass,
+    btScalar friction
+    ) {
+
+    tuxBoxObject *object = new tuxBoxObject(
+        pos,
+        size,
+        size,
+        size,
+        mass,
+        friction
+        );
+    if (object) {
+        Ogre::SceneManager *sceneManager = getSceneManager();
+        Ogre::SceneNode *rootNode = sceneManager->getRootSceneNode();
+        Ogre::Entity *entity = sceneManager->createEntity(
+            name,
+            "cube.mesh"
+            );
+        Ogre::SceneNode *node = rootNode->createChildSceneNode();
+        node->attachObject(entity);
+        node->scale(0.5, 0.5, 0.5);
+        object->attachNode(node);
+        m_world->addObject(object);
+    }
+}
+
 void tuxOgreApplication::initPlanet() {
 
     m_world = new tuxWorld;
@@ -124,7 +156,7 @@ void tuxOgreApplication::initPlanet() {
     btVector3 gravityCenter(btVector3(0.0, 0.0, 0.0));
     m_world->setGravityCenter(gravityCenter);
 
-    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 300.0);
+    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 400.0);
     if (planet) {
         Ogre::SceneManager *sceneManager = getSceneManager();
         Ogre::SceneNode *rootNode = sceneManager->getRootSceneNode();
@@ -135,15 +167,15 @@ void tuxOgreApplication::initPlanet() {
         Ogre::SceneNode *node = rootNode->createChildSceneNode();
         node->attachObject(entity);
         // Mesh has scale 100
-        node->scale(3.0, 3.0, 3.0);
+        node->scale(4.0, 4.0, 4.0);
         planet->attachNode(node);
         m_world->addObject(planet);
     }
 
     tuxCharacterObject *player = new tuxCharacterObject(
-        btVector3(0.0, 320.0, 0.0),
+        btVector3(0.0, 400.0, 0.0),
         10.0,
-        10.0
+        24.0
         );
     if (player) {
         Ogre::SceneManager *sceneManager = getSceneManager();
@@ -156,7 +188,6 @@ void tuxOgreApplication::initPlanet() {
         node->attachObject(entity);
 
         m_playerAnimState = entity->getAnimationState("amuse");
-        m_playerAnimState->setEnabled(true);
         m_playerAnimState->setLoop(true);
 
         player->attachNode(node);
@@ -164,6 +195,11 @@ void tuxOgreApplication::initPlanet() {
         player->getBody()->setActivationState(DISABLE_DEACTIVATION);
         m_player = player;
     }
+
+    addCubeObject("block1", btVector3(100, 400, 0), 24, 1, 0.5);
+    addCubeObject("block2", btVector3(-100, 400, 0), 24, 1, 0.5);
+    addCubeObject("block3", btVector3(0, 400, 100), 24, 1, 0.5);
+    addCubeObject("block4", btVector3(0, 400, -100), 24, 1, 0.5);
 }
 
 void tuxOgreApplication::addGroup(Ogre::String name, Ogre::String dir) {
@@ -186,6 +222,48 @@ Ogre::SceneNode* tuxOgreApplication::loadMesh(Ogre::String name) {
     }
 
     return lNode;
+}
+
+void tuxOgreApplication::movePlayer(btScalar walkVelocity) {
+    OIS::Keyboard *keyboard = m_inputManager->getKeyboard();
+    keyboard->capture();
+    if (keyboard->isKeyDown(OIS::KC_Q)) {
+        exit(0);
+    }
+
+    btTransform trans = m_player->getBody()->getWorldTransform();
+    const btVector3 localForward(0.0, 0.0, -1.0);
+    btVector3 forwardDir = trans.getBasis() * localForward;
+    btVector3 walkDirection = btVector3(0.0, 0.0, 0.0);
+
+    //rotate view
+    if (keyboard->isKeyDown(OIS::KC_LEFT)) {
+        btMatrix3x3 orn = trans.getBasis();
+        orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), 0.004));
+        m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
+    }
+
+    if (keyboard->isKeyDown(OIS::KC_RIGHT)) {
+        btMatrix3x3 orn = trans.getBasis();
+        orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), -0.004));
+        m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
+    }
+
+    if (keyboard->isKeyDown(OIS::KC_UP)) {
+        walkDirection -= forwardDir;
+        m_playerAnimState->setEnabled(true);
+    }
+
+    else if (keyboard->isKeyDown(OIS::KC_DOWN)) {
+        walkDirection += forwardDir;
+        m_playerAnimState->setEnabled(true);
+    }
+
+    else {
+        m_playerAnimState->setEnabled(false);
+    }
+                                          
+    m_player->getBody()->setLinearVelocity(walkDirection * walkVelocity);
 }
 
 void tuxOgreApplication::updateCamera() {
@@ -253,21 +331,13 @@ void tuxOgreApplication::updateCamera() {
 bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     bool result = false;
 
-    OIS::Keyboard *keyboard = m_inputManager->getKeyboard();
-    keyboard->capture();
-    if (keyboard->isKeyDown(OIS::KC_Q)) {
-        exit(0);
-    }
-
     btDynamicsWorld *dynamicsWorld = m_world->getDynamicsWorld();
     if (dynamicsWorld) {
         dynamicsWorld->stepSimulation(1.0 / 60.0);
         m_world->applyGravity();
+        btScalar walkVelocity = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
+        movePlayer(walkVelocity);
         m_playerAnimState->addTime(evt.timeSinceLastFrame);
-        const btVector3 localForward(0.0, 0.0, -1.0);
-        btTransform trans = m_player->getBody()->getWorldTransform();
-        btVector3 forwardDir = trans.getBasis() * localForward;
-        m_player->getBody()->setLinearVelocity(-1.1 * 16.0 * forwardDir);
         m_world->applyTransform();
         updateCamera();
         result = true;

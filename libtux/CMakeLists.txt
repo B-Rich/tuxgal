@@ -1,6 +1,9 @@
-ADD_LIBRARY(tux
+ADD_LIBRARY(
+    tux
     tuxWorld.cpp
     tuxObject.cpp
     tuxPlanetObject.cpp
+    tuxDynamicObject.cpp
     tuxCharacterObject.cpp
-)
+    tuxBoxObject.cpp
+    )

@@ -34,11 +34,21 @@ public:
     void addGroup(Ogre::String name, Ogre::String dir);
     Ogre::SceneNode* loadMesh(Ogre::String name);
 
+    void movePlayer(btScalar walkVelocity);
+
     void updateCamera();
 
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
 
 private:
+    void addCubeObject(
+        Ogre::String name,
+        btVector3 pos,
+        btScalar size,
+        btScalar mass,
+        btScalar friction
+        );
+
     Ogre::String mWindowTitle;
     unsigned int mSizeX, mSizeY;
     bool mFullScreen;

@@ -11,10 +11,9 @@ public:
     tuxGlutBtApplication();
     virtual ~tuxGlutBtApplication();
 
-    void addCharacterObject(
+    void addCubeObject(
         btVector3 pos,
-        btScalar width,
-        btScalar height,
+        btScalar size,
         btScalar mass,
         btScalar friction 
         );

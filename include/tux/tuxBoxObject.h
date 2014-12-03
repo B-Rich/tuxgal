@@ -1,18 +1,19 @@
-#ifndef TUX_CHARACTER_OBJECT_H
-#define TUX_CHARACTER_OBJECT_H
+#ifndef TUX_BOX_OBJECT_H
+#define TUX_BOX_OBJECT_H
 
 #include "tuxDynamicObject.h"
 
-class tuxCharacterObject : public tuxDynamicObject {
+class tuxBoxObject : public tuxDynamicObject {
 public:
-    tuxCharacterObject(
+    tuxBoxObject(
         btVector3 pos,
         btScalar  width = 1.75,
         btScalar  height = 1.75,
+        btScalar  depth = 1.75,
         btScalar  mass = 1.0,
         btScalar  friction = 0.1
         );
 };
 
-#endif //TUX_CHARACTER_OBJECT_H
+#endif //TUX_BOX_OBJECT_H
 

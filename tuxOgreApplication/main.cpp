@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         std::cout << "start_z: " << start_z << std::endl;
     }
 
-    tuxOgreApplication *app = new tuxOgreApplication("Gravity Demo", 800, 600);
+    tuxOgreApplication *app = new tuxOgreApplication("Tux Galaxy", 800, 600);
 
     if (!app->initOgre()) {
         std::cerr << "Error initialzing Ogre" << std::endl;
