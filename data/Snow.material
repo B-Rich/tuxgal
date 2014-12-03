@@ -1,0 +1,13 @@
+material Snow
+{
+    technique
+    {
+        pass
+        {
+		    texture_unit
+			{
+			    texture snow.jpg
+			}
+        }
+    }
+}

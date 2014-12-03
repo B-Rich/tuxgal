@@ -1,0 +1,13 @@
+material Ice
+{
+    technique
+    {
+        pass
+        {
+		    texture_unit
+			{
+			    texture ice.jpg
+			}
+        }
+    }
+}

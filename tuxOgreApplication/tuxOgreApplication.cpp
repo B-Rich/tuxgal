@@ -95,13 +95,13 @@ void tuxOgreApplication::initBasicLight() {
     Ogre::SceneNode *lLightNode = 0;
     Ogre::Light *lLight = mScene->createLight("pointLight");
     lLight->setType(Ogre::Light::LT_POINT);
-    lLight->setPosition(Ogre::Vector3(0, 1500, 2000));
+    lLight->setPosition(Ogre::Vector3(0, 1500, 100));
     lLight->setDiffuseColour(0.6f, 0.6f, 0.6f);
     lLight->setSpecularColour(1.0f, 1.0f, 1.0f);
     lLightNode = lRootSceneNode->createChildSceneNode();
     lLightNode->attachObject(lLight);
 
-    Ogre::ColourValue lAmbientColour(0.2f, 0.f, 0.2f, 1.0f);
+    Ogre::ColourValue lAmbientColour(0.4f, 0.4f, 0.4f, 1.0f);
     mScene->setAmbientLight(lAmbientColour);
 }
 
@@ -142,7 +142,7 @@ void tuxOgreApplication::addCubeObject(
             );
         Ogre::SceneNode *node = rootNode->createChildSceneNode();
         node->attachObject(entity);
-        node->scale(0.5, 0.5, 0.5);
+        node->scale(size, size, size);
         object->attachNode(node);
         m_world->addObject(object);
     }
@@ -156,7 +156,7 @@ void tuxOgreApplication::initPlanet() {
     btVector3 gravityCenter(btVector3(0.0, 0.0, 0.0));
     m_world->setGravityCenter(gravityCenter);
 
-    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 400.0);
+    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 500.0);
     if (planet) {
         Ogre::SceneManager *sceneManager = getSceneManager();
         Ogre::SceneNode *rootNode = sceneManager->getRootSceneNode();
@@ -166,14 +166,13 @@ void tuxOgreApplication::initPlanet() {
             );
         Ogre::SceneNode *node = rootNode->createChildSceneNode();
         node->attachObject(entity);
-        // Mesh has scale 100
-        node->scale(4.0, 4.0, 4.0);
+        node->scale(500.0, 500.0, 500.0);
         planet->attachNode(node);
         m_world->addObject(planet);
     }
 
     tuxCharacterObject *player = new tuxCharacterObject(
-        btVector3(0.0, 400.0, 0.0),
+        btVector3(0.0, 500.0, 0.0),
         10.0,
         24.0
         );
@@ -196,10 +195,10 @@ void tuxOgreApplication::initPlanet() {
         m_player = player;
     }
 
-    addCubeObject("block1", btVector3(100, 400, 0), 24, 1, 0.5);
-    addCubeObject("block2", btVector3(-100, 400, 0), 24, 1, 0.5);
-    addCubeObject("block3", btVector3(0, 400, 100), 24, 1, 0.5);
-    addCubeObject("block4", btVector3(0, 400, -100), 24, 1, 0.5);
+    addCubeObject("block1", btVector3(100, 500, 0), 24, 1, 0.5);
+    addCubeObject("block2", btVector3(-100, 500, 0), 24, 1, 0.5);
+    addCubeObject("block3", btVector3(0, 500, 100), 24, 1, 0.5);
+    addCubeObject("block4", btVector3(0, 500, -100), 24, 1, 0.5);
 }
 
 void tuxOgreApplication::addGroup(Ogre::String name, Ogre::String dir) {

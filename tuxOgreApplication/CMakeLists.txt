@@ -32,7 +32,11 @@ IF (NOT INTERNAL_CREATE_DISTRIBUTABLE_MSVC_PROJECTFILES)
         TARGET tuxgal
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/cube.mesh ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/Ice.material ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/ice.jpg ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/sphere.mesh ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/Snow.material ${CMAKE_CURRENT_BINARY_DIR}
+        COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/snow.jpg ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/penguin.mesh ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/penguin.skeleton ${CMAKE_CURRENT_BINARY_DIR}
         COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different ${TUXGAL_SOURCE_DIR}/data/Penguin.material ${CMAKE_CURRENT_BINARY_DIR}
