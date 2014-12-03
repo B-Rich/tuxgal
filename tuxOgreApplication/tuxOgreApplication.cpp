@@ -196,9 +196,11 @@ void tuxOgreApplication::initPlanet() {
     }
 
     addCubeObject("block1", btVector3(100, 500, 0), 24, 1, 0.5);
+    addCubeObject("block1top", btVector3(100, 524, 0), 24, 1, 0.5);
     addCubeObject("block2", btVector3(-100, 500, 0), 24, 1, 0.5);
+    addCubeObject("block2top", btVector3(-100, 524, 0), 24, 1, 0.5);
     addCubeObject("block3", btVector3(0, 500, 100), 24, 1, 0.5);
-    addCubeObject("block4", btVector3(0, 500, -100), 24, 1, 0.5);
+    addCubeObject("block3top", btVector3(0, 524, 100), 24, 1, 0.5);
 }
 
 void tuxOgreApplication::addGroup(Ogre::String name, Ogre::String dir) {
