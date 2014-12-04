@@ -1,11 +1,11 @@
 #include "tuxCharacterObject.h"
 
 tuxCharacterObject::tuxCharacterObject(
-    btVector3 pos,
-    btScalar  width,
-    btScalar  height,
-    btScalar  mass,
-    btScalar  friction
+    const btVector3 pos,
+    const btScalar  width,
+    const btScalar  height,
+    const btScalar  mass,
+    const btScalar  friction
     ) {
     btCollisionShape* characterShape = new btCapsuleShape(width, height);
 
@@ -38,7 +38,7 @@ tuxCharacterObject::tuxCharacterObject(
     }
 }
 
-void tuxCharacterObject::turn(btScalar angle) {
+void tuxCharacterObject::turn(const btScalar angle) {
     if (angle) {
         btMatrix3x3 basis = getBody()->getWorldTransform().getBasis();
         basis *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), angle));
@@ -46,7 +46,7 @@ void tuxCharacterObject::turn(btScalar angle) {
     }
 }
 
-void tuxCharacterObject::move(btScalar speed) {
+void tuxCharacterObject::move(const btScalar speed) {
     if (speed) {
         btTransform trans = getBody()->getWorldTransform();
         const btVector3 localForward(0.0, 0.0, -1.0);

@@ -6,12 +6,12 @@
 class tuxBoxObject : public tuxDynamicObject {
 public:
     tuxBoxObject(
-        btVector3 pos,
-        btScalar  width = 1.75,
-        btScalar  height = 1.75,
-        btScalar  depth = 1.75,
-        btScalar  mass = 1.0,
-        btScalar  friction = 0.1
+        const btVector3 pos,
+        const btScalar  width = 1.75,
+        const btScalar  height = 1.75,
+        const btScalar  depth = 1.75,
+        const btScalar  mass = 1.0,
+        const btScalar  friction = 0.1
         );
 };
 

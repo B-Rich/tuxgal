@@ -1,13 +1,16 @@
 #ifndef TUX_PLANET_OBJECT_H
 #define TUX_PLANET_OBJECT_H
 
-#include "tuxObject.h"
+#include "tuxStaticObject.h"
 
-class tuxPlanetObject : public tuxObject {
+class tuxPlanetObject : public tuxStaticObject {
 public:
-    tuxPlanetObject(btVector3 pos, btScalar radius);
+    tuxPlanetObject(const btVector3 pos, const btScalar radius);
 
-    virtual void applyGravity(tuxWorld *world) { }
+    virtual btVector3 getUpDir(const btVector3 pos) const;
+
+private:
+    btVector3 m_center;
 };
 
 #endif //TUX_PLANET_OBJECT_H

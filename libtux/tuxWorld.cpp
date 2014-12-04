@@ -5,6 +5,11 @@ void tuxWorld::addObject(tuxObject *object) {
     m_dynamicsWorld->addRigidBody(object->getBody());
 }
 
+void tuxWorld::setStaticObject(tuxStaticObject *object) {
+    addObject(object);
+    m_staticObject = object;
+}
+
 bool tuxWorld::init() {
     m_collisionConfiguration = new btDefaultCollisionConfiguration();
     m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
@@ -22,7 +27,6 @@ bool tuxWorld::init() {
     );
     m_dynamicsWorld->getDispatchInfo().m_allowedCcdPenetration = 0.0001;
     if (m_dynamicsWorld) {
-        m_gravityCenter = btVector3(0.0, 0.0, 0.0);
         m_initialized = true;
     }
 
@@ -55,6 +59,19 @@ tuxWorld::~tuxWorld() {
         delete m_dispatcher;
         delete m_collisionConfiguration;
     }
+}
+
+btVector3 tuxWorld::getUpDir(const btVector3 pos) const {
+    btVector3 upDir;
+
+    if (m_staticObject) {
+        upDir = m_staticObject->getUpDir(pos);
+    }
+    else {
+        upDir = btVector3(0.0, 0.0, 0.0);
+    }
+
+    return upDir;
 }
 
 void tuxWorld::applyGravity() {

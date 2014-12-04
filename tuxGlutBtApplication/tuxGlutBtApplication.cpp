@@ -45,11 +45,10 @@ void tuxGlutBtApplication::initPhysics() {
     m_dynamicsWorld = m_world->getDynamicsWorld();
 
     btVector3 gravityCenter(btVector3(0, -20, 0));
-    m_world->setGravityCenter(gravityCenter);
 
     tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 40);
     if (planet) {
-        m_world->addObject(planet);
+        m_world->setStaticObject(planet);
     }
 
     tuxCharacterObject *player = new tuxCharacterObject(btVector3(0, 0, 0));

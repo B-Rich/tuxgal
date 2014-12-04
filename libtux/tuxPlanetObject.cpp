@@ -1,6 +1,6 @@
 #include "tuxPlanetObject.h"
 
-tuxPlanetObject::tuxPlanetObject(btVector3 pos, btScalar radius) {
+tuxPlanetObject::tuxPlanetObject(const btVector3 pos, const btScalar radius) {
     btTransform planetTransform;
     planetTransform.setIdentity();
     planetTransform.setOrigin(pos);
@@ -24,6 +24,21 @@ tuxPlanetObject::tuxPlanetObject(btVector3 pos, btScalar radius) {
     if (planetBody) {
         planetBody->setUserPointer(this);
         init(planetShape, planetBody);
+        m_center = pos;
     }
+}
+
+btVector3 tuxPlanetObject::getUpDir(const btVector3 pos) const {
+    btVector3 upDir;
+
+    if (getInitialized()) {
+        upDir = pos - m_center;
+        upDir.normalize();
+    }
+    else {
+        upDir = btVector3(0.0, 0.0, 0.0);
+    }
+
+    return upDir;
 }
 
