@@ -1,12 +1,12 @@
 #include "tuxBoxObject.h"
 
 tuxBoxObject::tuxBoxObject(
-    btVector3 pos,
-    btScalar  width,
-    btScalar  height,
-    btScalar  depth,
-    btScalar  mass,
-    btScalar  friction
+    const btVector3 pos,
+    const btScalar  width,
+    const btScalar  height,
+    const btScalar  depth,
+    const btScalar  mass,
+    const btScalar  friction
     ) {
     btCollisionShape* boxShape =
         new btBoxShape(btVector3(width, height, depth));

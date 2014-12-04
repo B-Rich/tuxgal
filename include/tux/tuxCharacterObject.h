@@ -6,15 +6,15 @@
 class tuxCharacterObject : public tuxDynamicObject {
 public:
     tuxCharacterObject(
-        btVector3 pos,
-        btScalar  width = 1.75,
-        btScalar  height = 1.75,
-        btScalar  mass = 1.0,
-        btScalar  friction = 0.1
+        const btVector3 pos,
+        const btScalar  width = 1.75,
+        const btScalar  height = 1.75,
+        const btScalar  mass = 1.0,
+        const btScalar  friction = 0.1
         );
 
-    void turn(btScalar angle);
-    void move(btScalar speed);
+    void turn(const btScalar angle);
+    void move(const btScalar speed);
 };
 
 #endif //TUX_CHARACTER_OBJECT_H

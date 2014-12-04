@@ -154,7 +154,6 @@ void tuxOgreApplication::initPlanet() {
     m_world->init();
 
     btVector3 gravityCenter(btVector3(0.0, 0.0, 0.0));
-    m_world->setGravityCenter(gravityCenter);
 
     tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 500.0);
     if (planet) {
@@ -168,7 +167,7 @@ void tuxOgreApplication::initPlanet() {
         node->attachObject(entity);
         node->scale(500.0, 500.0, 500.0);
         planet->attachNode(node);
-        m_world->addObject(planet);
+        m_world->setStaticObject(planet);
     }
 
     tuxCharacterObject *player = new tuxCharacterObject(
