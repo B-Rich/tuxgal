@@ -34,13 +34,19 @@ public:
     void addGroup(Ogre::String name, Ogre::String dir);
     Ogre::SceneNode* loadMesh(Ogre::String name);
 
-    void movePlayer(btScalar walkSpeed);
+    void movePlayer(btScalar walkSpeed, btScalar turnSpeed);
 
     void updateCamera();
 
     virtual bool frameStarted(const Ogre::FrameEvent& evt);
 
 private:
+    btScalar getDeltaTimeMicroseconds() {
+        btScalar dt = (btScalar) m_clock.getTimeMicroseconds();
+        m_clock.reset();
+        return dt;
+    }
+
     void addCubeObject(
         Ogre::String name,
         btVector3 pos,
@@ -60,6 +66,8 @@ private:
     btVector3 m_cameraPosition;
     btVector3 m_cameraTargetPosition;
     btScalar m_cameraHeight;
+
+    btClock m_clock;
 
     Ogre::AnimationState *m_playerAnimState;
 

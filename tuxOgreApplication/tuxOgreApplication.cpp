@@ -224,7 +224,7 @@ Ogre::SceneNode* tuxOgreApplication::loadMesh(Ogre::String name) {
     return lNode;
 }
 
-void tuxOgreApplication::movePlayer(btScalar walkSpeed) {
+void tuxOgreApplication::movePlayer(btScalar walkSpeed, btScalar turnSpeed) {
     OIS::Keyboard *keyboard = m_inputManager->getKeyboard();
     keyboard->capture();
     if (keyboard->isKeyDown(OIS::KC_Q)) {
@@ -233,11 +233,11 @@ void tuxOgreApplication::movePlayer(btScalar walkSpeed) {
 
     //rotate view
     if (keyboard->isKeyDown(OIS::KC_LEFT)) {
-        m_player->turn(0.002);
+        m_player->turn(turnSpeed);
     }
 
     else if (keyboard->isKeyDown(OIS::KC_RIGHT)) {
-        m_player->turn(-0.002);
+        m_player->turn(-turnSpeed);
     }
 
     //move
@@ -325,15 +325,21 @@ void tuxOgreApplication::updateCamera() {
 bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     bool result = false;
 
+    float dt = getDeltaTimeMicroseconds() * 0.000001;
+
     btDynamicsWorld *dynamicsWorld = m_world->getDynamicsWorld();
     if (dynamicsWorld) {
-        dynamicsWorld->stepSimulation(1.0 / 60.0);
+        dynamicsWorld->stepSimulation(dt, 2);
+
         m_world->applyGravity();
-        btScalar walkSpeed = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
-        movePlayer(walkSpeed);
+
+        movePlayer(1.1 * 40.0, 0.02);
         m_playerAnimState->addTime(evt.timeSinceLastFrame);
+
         m_world->applyTransform();
+
         updateCamera();
+
         result = true;
     }
 
