@@ -333,7 +333,7 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
 
         m_world->applyGravity();
 
-        movePlayer(1.1 * 40.0, 0.02);
+        movePlayer(1.1 * 16.0, 0.02);
         m_playerAnimState->addTime(evt.timeSinceLastFrame);
 
         m_world->applyTransform();
