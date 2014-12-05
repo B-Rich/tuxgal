@@ -93,15 +93,15 @@ void tuxOgreApplication::initScene() {
 void tuxOgreApplication::initBasicLight() {
     Ogre::SceneNode *lRootSceneNode = mScene->getRootSceneNode();
     Ogre::SceneNode *lLightNode = 0;
-    Ogre::Light *lLight = mScene->createLight("pointLight");
-    lLight->setType(Ogre::Light::LT_POINT);
-    lLight->setPosition(Ogre::Vector3(0, 1500, 100));
-    lLight->setDiffuseColour(0.6f, 0.6f, 0.6f);
-    lLight->setSpecularColour(1.0f, 1.0f, 1.0f);
+    Ogre::Light *lLight = mScene->createLight("directionalLight");
+    lLight->setType(Ogre::Light::LT_DIRECTIONAL);
+    lLight->setDiffuseColour(0.6, 0.6, 0.6);
+    lLight->setSpecularColour(1.0, 1.0, 1.0);
+    lLight->setDirection(Ogre::Vector3(-1.0, -1.0, 0.0));
     lLightNode = lRootSceneNode->createChildSceneNode();
     lLightNode->attachObject(lLight);
 
-    Ogre::ColourValue lAmbientColour(0.4f, 0.4f, 0.4f, 1.0f);
+    Ogre::ColourValue lAmbientColour(0.4, 0.4, 0.4, 1.0);
     mScene->setAmbientLight(lAmbientColour);
 }
 
@@ -155,23 +155,24 @@ void tuxOgreApplication::initPlanet() {
 
     btVector3 gravityCenter(btVector3(0.0, 0.0, 0.0));
 
-    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, 500.0);
+    const btScalar planetRadius = 500.0;
+    tuxPlanetObject *planet = new tuxPlanetObject(gravityCenter, planetRadius);
     if (planet) {
         Ogre::SceneManager *sceneManager = getSceneManager();
         Ogre::SceneNode *rootNode = sceneManager->getRootSceneNode();
         Ogre::Entity *entity = sceneManager->createEntity(
             "planet",
-            "sphere.mesh"
+            "Europa.mesh"
             );
         Ogre::SceneNode *node = rootNode->createChildSceneNode();
         node->attachObject(entity);
-        node->scale(500.0, 500.0, 500.0);
+        node->scale(planetRadius, planetRadius, planetRadius);
         planet->attachNode(node);
         m_world->setStaticObject(planet);
     }
 
     tuxCharacterObject *player = new tuxCharacterObject(
-        btVector3(0.0, 500.0, 0.0),
+        btVector3(0.0, planetRadius, 0.0),
         10.0,
         24.0
         );
@@ -194,11 +195,11 @@ void tuxOgreApplication::initPlanet() {
         m_player = player;
     }
 
-    addCubeObject("block1", btVector3(100, 500, 0), 24, 1, 0.5);
-    addCubeObject("block1top", btVector3(100, 524, 0), 24, 1, 0.5);
-    addCubeObject("block2", btVector3(-100, 500, 0), 24, 1, 0.5);
-    addCubeObject("block2top", btVector3(-100, 524, 0), 24, 1, 0.5);
-    addCubeObject("block3", btVector3(0, 500, 100), 24, 1, 0.5);
+    addCubeObject("block1", btVector3(100, planetRadius, 0), 24, 1, 0.5);
+    addCubeObject("block1top", btVector3(118, 524, 0), 24, 1, 0.5);
+    addCubeObject("block2", btVector3(-100, planetRadius, 0), 24, 1, 0.5);
+    addCubeObject("block2top", btVector3(-118, 524, 0), 24, 1, 0.5);
+    addCubeObject("block3", btVector3(0, planetRadius, 100), 24, 1, 0.5);
     addCubeObject("block3top", btVector3(0, 524, 100), 24, 1, 0.5);
 }
 
