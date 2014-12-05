@@ -11,7 +11,7 @@ public:
     btCollisionShape* getShape() const { return m_shape; }
     btRigidBody* getBody() const { return m_body; }
     btCollisionObject* getCollisionObject() const {
-        return (btCollisionObject *) m_body;
+        return dynamic_cast<btCollisionObject*>(m_body);
     }
 
     void attachNode(Ogre::SceneNode *node);
