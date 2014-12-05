@@ -119,10 +119,10 @@ bool tuxOgreApplication::initInput() {
 
 void tuxOgreApplication::addCubeObject(
     Ogre::String name,
-    btVector3 pos,
-    btScalar size,
-    btScalar mass,
-    btScalar friction
+    btVector3    pos,
+    btScalar     size,
+    btScalar     mass,
+    btScalar     friction
     ) {
 
     tuxBoxObject *object = new tuxBoxObject(
@@ -195,12 +195,18 @@ void tuxOgreApplication::initPlanet() {
         m_player = player;
     }
 
+//#define GEO_COORDS
+#ifndef GEO_COORDS
     addCubeObject("block1", btVector3(100, planetRadius, 0), 24, 1, 0.5);
     addCubeObject("block1top", btVector3(118, 524, 0), 24, 1, 0.5);
     addCubeObject("block2", btVector3(-100, planetRadius, 0), 24, 1, 0.5);
     addCubeObject("block2top", btVector3(-118, 524, 0), 24, 1, 0.5);
     addCubeObject("block3", btVector3(0, planetRadius, 100), 24, 1, 0.5);
     addCubeObject("block3top", btVector3(0, 524, 100), 24, 1, 0.5);
+#else
+    addCubeObject("block1", tuxGeoCoords(planetRadius, 0.0, 90.0), 24, 1, 0.5);
+    addCubeObject("block1top", tuxGeoCoords(planetRadius + 70.0, 0.0, 90.0), 24, 1, 0.5);
+#endif
 }
 
 void tuxOgreApplication::addGroup(Ogre::String name, Ogre::String dir) {

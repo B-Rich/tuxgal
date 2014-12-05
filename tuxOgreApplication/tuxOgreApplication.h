@@ -3,6 +3,7 @@
 
 #include "OgreFrameListener.h"
 #include "tuxInputManager.h"
+#include "tuxGeoCoords.h"
 #include "tuxWorld.h"
 #include "tuxCharacterObject.h"
 
@@ -49,11 +50,21 @@ private:
 
     void addCubeObject(
         Ogre::String name,
-        btVector3 pos,
-        btScalar size,
-        btScalar mass,
-        btScalar friction
+        btVector3    pos,
+        btScalar     size,
+        btScalar     mass,
+        btScalar     friction
         );
+
+    void addCubeObject(
+        Ogre::String name,
+        tuxGeoCoords pos,
+        btScalar     size,
+        btScalar     mass,
+        btScalar     friction
+        ) {
+        addCubeObject(name, static_cast<btVector3>(pos), size, mass, friction);
+    }
 
     Ogre::String mWindowTitle;
     unsigned int mSizeX, mSizeY;

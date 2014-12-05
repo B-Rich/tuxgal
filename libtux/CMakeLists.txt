@@ -1,5 +1,6 @@
 ADD_LIBRARY(
     tux
+    tuxGeoCoords.cpp
     tuxWorld.cpp
     tuxObject.cpp
     tuxPlanetObject.cpp
