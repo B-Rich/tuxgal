@@ -114,7 +114,7 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
 
         if (gJump) {
             btVector3 velocity = m_player->getBody()->getLinearVelocity();
-            m_player->getBody()->setLinearVelocity(m_player->getUpDir() * 10.0);
+            m_player->getBody()->setLinearVelocity(velocity + m_player->getUpDir() * 10.0);
             gJump = false;
         }
 
