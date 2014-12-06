@@ -88,39 +88,35 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
             dt = 1.0 / 420.0;
         }
 
-        //set walkDirection for our character
-        btTransform trans = m_player->getBody()->getWorldTransform();
-        btVector3 upDir = m_player->getUpDir();
-        const btVector3 localForward(0.0, 0.0, -1.0);
-        btVector3 forwardDir = trans.getBasis() * localForward;
-        //printf("forwardDir=%f,%f,%f\n",forwardDir[0],forwardDir[1],forwardDir[2]);
-
-        btVector3 walkDirection = btVector3(0.0, 0.0, 0.0);
-        btScalar walkVelocity = btScalar(1.1) * 4.0; // 4 km/h -> 1.1 m/s
-        btScalar walkSpeed = walkVelocity;// * dt;
+        //set walk speed for our character
+        btScalar walkSpeed = btScalar(1.1) * 4.0;// * dt;
 
         //rotate view
         if (gLeft) {
-            btMatrix3x3 orn = trans.getBasis();
-            orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), 0.01));
-            m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
+            m_player->turn(0.01);
         }
 
         if (gRight) {
-            btMatrix3x3 orn = trans.getBasis();
-            orn *= btMatrix3x3(btQuaternion(btVector3(0.0, 1.0, 0.0), -0.01));
-            m_player->getCollisionObject()->getWorldTransform().setBasis(orn);
+            m_player->turn(-0.01);
         }
 
         if (gForward) {
-            walkDirection -= forwardDir;
+            m_player->move(-walkSpeed);
         }
 
-        if (gBackward) {
-            walkDirection += forwardDir;
+        else if (gBackward) {
+            m_player->move(walkSpeed);
         }
 
-        m_player->getBody()->setLinearVelocity(walkDirection * walkSpeed);
+        else {
+            m_player->move(0.0);
+        }
+
+        if (gJump) {
+            btVector3 velocity = m_player->getBody()->getLinearVelocity();
+            m_player->getBody()->setLinearVelocity(m_player->getUpDir() * 10.0);
+            gJump = false;
+        }
 
         int numSimSteps = dynamicsWorld->stepSimulation(dt, maxSimSubSteps);
 

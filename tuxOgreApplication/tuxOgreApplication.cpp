@@ -263,8 +263,11 @@ void tuxOgreApplication::movePlayer(btScalar walkSpeed, btScalar turnSpeed) {
         speed = 0.0;
         m_playerAnimState->setEnabled(false);
     }
-                                          
+
     m_player->move(speed);
+
+    if (keyboard->isKeyDown(OIS::KC_SPACE)) {
+    }
 }
 
 void tuxOgreApplication::updateCamera() {
@@ -332,7 +335,7 @@ void tuxOgreApplication::updateCamera() {
 bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
     bool result = false;
 
-    float dt = getDeltaTimeMicroseconds() * 0.000001;
+    float dt = getDeltaTimeMicroseconds() * 0.00001;
 
     btDynamicsWorld *dynamicsWorld = m_world->getDynamicsWorld();
     if (dynamicsWorld) {
@@ -340,7 +343,7 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
 
         m_world->applyGravity();
 
-        movePlayer(1.1 * 16.0, 0.02);
+        movePlayer(1.1 * 4.0, 0.01);
         m_playerAnimState->addTime(evt.timeSinceLastFrame);
 
         m_world->applyTransform();

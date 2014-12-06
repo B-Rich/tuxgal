@@ -47,14 +47,12 @@ void tuxCharacterObject::turn(const btScalar angle) {
 }
 
 void tuxCharacterObject::move(const btScalar speed) {
-    if (speed) {
-        btTransform trans = getBody()->getWorldTransform();
-        const btVector3 localForward(0.0, 0.0, -1.0);
-        btVector3 forwardDir = trans.getBasis() * localForward;
-        getBody()->setLinearVelocity(forwardDir * speed);
-    }
-    else {
-        getBody()->setLinearVelocity(btVector3(0.0, 0.0, 0.0));
-    }
+    btVector3 currVelocity = getBody()->getLinearVelocity();
+    btVector3 upDir = getUpDir();
+    btVector3 gravityVelocity = upDir * currVelocity.dot(upDir);
+    btTransform trans = getBody()->getWorldTransform();
+    const btVector3 localForward(0.0, 0.0, -1.0);
+    btVector3 forwardDir = trans.getBasis() * localForward;
+    getBody()->setLinearVelocity(gravityVelocity + forwardDir * speed);
 }
 
