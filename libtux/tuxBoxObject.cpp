@@ -34,7 +34,7 @@ tuxBoxObject::tuxBoxObject(
     btRigidBody *boxBody = new btRigidBody(rbInfo);
     if (boxBody) {
         boxBody->setAngularFactor(0.0);
-        boxBody->setRestitution(1.0);
+        boxBody->setRestitution(0.0);
         boxBody->setUserPointer(this);
         init(boxShape, boxBody);
     }

@@ -32,7 +32,7 @@ tuxCharacterObject::tuxCharacterObject(
     btRigidBody *characterBody = new btRigidBody(rbInfo);
     if (characterBody) {
         characterBody->setAngularFactor(0.0);
-        characterBody->setRestitution(1.0);
+        characterBody->setRestitution(0.0);
         characterBody->setUserPointer(this);
         init(characterShape, characterBody);
     }
