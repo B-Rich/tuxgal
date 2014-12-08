@@ -6,7 +6,8 @@ tuxCharacterObject::tuxCharacterObject(
     const btScalar  height,
     const btScalar  mass,
     const btScalar  friction
-    ) {
+    )
+    : m_jumping(false) {
     btCollisionShape* characterShape = new btCapsuleShape(width, height);
 
     //set the initial position and transform. We set tranform none
@@ -54,5 +55,23 @@ void tuxCharacterObject::move(const btScalar speed) {
     const btVector3 localForward(0.0, 0.0, -1.0);
     btVector3 forwardDir = trans.getBasis() * localForward;
     getBody()->setLinearVelocity(gravityVelocity + forwardDir * speed);
+}
+
+void tuxCharacterObject::jump(const btScalar speed) {
+    if (!m_jumping) {
+        btVector3 velocity = getBody()->getLinearVelocity();
+        getBody()->setLinearVelocity(velocity + getUpDir() * speed);
+        m_jumping = true;
+    }
+}
+
+void tuxCharacterObject::applyMovement() {
+    static int count;
+
+    // TODO: Replace lock with checking if hit ground
+    if (++count == 256) {
+        m_jumping = false;
+        count = 0;
+    }
 }
 

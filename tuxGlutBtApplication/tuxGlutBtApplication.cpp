@@ -4,11 +4,11 @@
 #include "tuxBoxObject.h"
 #include "tuxGlutBtApplication.h"
 
-static bool gForward = 0;
-static bool gBackward = 0;
-static bool gLeft = 0;
-static bool gRight = 0;
-static bool gJump = 0;
+static bool gForward = false;
+static bool gBackward = false;
+static bool gLeft = false;
+static bool gRight = false;
+static bool gJump = false;
 
 tuxGlutBtApplication::tuxGlutBtApplication()
     : m_cameraHeight(4.0) {
@@ -113,10 +113,11 @@ void tuxGlutBtApplication::clientMoveAndDisplay()
         }
 
         if (gJump) {
-            btVector3 velocity = m_player->getBody()->getLinearVelocity();
-            m_player->getBody()->setLinearVelocity(velocity + m_player->getUpDir() * 10.0);
+            m_player->jump(10);
             gJump = false;
         }
+
+        m_player->applyMovement();
 
         int numSimSteps = dynamicsWorld->stepSimulation(dt, maxSimSubSteps);
 
