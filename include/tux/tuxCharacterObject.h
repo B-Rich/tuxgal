@@ -15,6 +15,12 @@ public:
 
     void turn(const btScalar angle);
     void move(const btScalar speed);
+    void jump(const btScalar speed);
+
+    void applyMovement();
+
+private:
+    bool m_jumping;
 };
 
 #endif //TUX_CHARACTER_OBJECT_H

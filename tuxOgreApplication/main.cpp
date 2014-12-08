@@ -9,30 +9,8 @@
 #include "OgreEntity.h"
 #include "tuxOgreApplication.h"
 
-int main(int argc, char *argv[])
+int main(void)
 {
-    float start_x = .0;
-    float start_y = .0;
-    float start_z = .0;
-
-    if (argc > 1) {
-        start_x = atof(argv[1]);
-        std::cout << "start_x: " << start_x << std::endl;
-    }
-    else {
-        start_y = 400.0;
-    }
-
-    if (argc > 2) {
-        start_y = atof(argv[2]);
-        std::cout << "start_y: " << start_y << std::endl;
-    }
-
-    if (argc > 3) {
-        start_z = atof(argv[3]);
-        std::cout << "start_z: " << start_z << std::endl;
-    }
-
     tuxOgreApplication *app = new tuxOgreApplication("Tux Galaxy", 800, 600);
 
     if (!app->initOgre()) {
