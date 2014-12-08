@@ -195,14 +195,14 @@ void tuxOgreApplication::initPlanet() {
         m_player = player;
     }
 
-//#define GEO_COORDS
+//#define GEO_COORDS 1
 #ifndef GEO_COORDS
     addCubeObject("block1", btVector3(100, planetRadius, 0), 24, 1, 0.5);
-    addCubeObject("block1top", btVector3(118, 524, 0), 24, 1, 0.5);
+    addCubeObject("block1top", btVector3(119, 524, 0), 24, 1, 0.5);
     addCubeObject("block2", btVector3(-100, planetRadius, 0), 24, 1, 0.5);
-    addCubeObject("block2top", btVector3(-118, 524, 0), 24, 1, 0.5);
+    addCubeObject("block2top", btVector3(-119, 524, 0), 24, 1, 0.5);
     addCubeObject("block3", btVector3(0, planetRadius, 100), 24, 1, 0.5);
-    addCubeObject("block3top", btVector3(0, 524, 100), 24, 1, 0.5);
+    addCubeObject("block3top", btVector3(0, 524, 119), 24, 1, 0.5);
 #else
     addCubeObject("block1", tuxGeoCoords(planetRadius, 0.0, 90.0), 24, 1, 0.5);
     addCubeObject("block1top", tuxGeoCoords(planetRadius + 70.0, 0.0, 90.0), 24, 1, 0.5);
@@ -350,7 +350,7 @@ bool tuxOgreApplication:: frameStarted(const Ogre::FrameEvent& evt) {
 
         m_world->applyGravity();
 
-        movePlayer(1.1 * 4.0, 0.01, 32.0);
+        movePlayer(1.1 * 4.0, 0.01, 20.0);
         m_playerAnimState->addTime(evt.timeSinceLastFrame);
 
         m_world->applyTransform();
